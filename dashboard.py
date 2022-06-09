@@ -1,4 +1,5 @@
 # import required packages
+from turtle import color
 import pandas as pd
 import plotly.express as px  # (version 4.7.0 or higher)
 import plotly.graph_objects as go
@@ -8,13 +9,15 @@ import statsmodels.api as sm
 
 
 nato_spendings = pd.read_csv('nato_spendings_2021.csv')
-oil_prices = pd.read_csv('oil_brent_texas.csv')
+oil_prices = pd.read_csv('oil_brent_texas.csv', header=[0])
 
 # Einlesen der KIP Tabelle
 bachelor_table = pd.read_csv('bachelor_tablde.csv')
+bachelor_table = bachelor_table.astype({'year': int})
 
 # Einelsen der Konflikttabelle
 war_table = pd.read_csv('war_table.csv')
+war_table = war_table.astype({'year': int})
 
 # Rename der KIP Tabellenköpfe
 bachelor_table = bachelor_table.rename(columns={
@@ -120,7 +123,7 @@ fig_oil_prices.update_layout(
     )
 )
 
-app.layout = html.Div(className='row', children=[
+app.layout = html.Div(children=[
     html.H1("Dashboard: Influence of military conflicts"),
 
 
@@ -148,7 +151,7 @@ app.layout = html.Div(className='row', children=[
                   style={'display': 'inline-block'})
     ],),
 
-    html.Div(children=[
+    html.Div(style={'width': "50%"}, children=[
         html.Div([
             dcc.Dropdown(id='country_picker',
                          options=country_options,
@@ -203,10 +206,89 @@ app.layout = html.Div(className='row', children=[
                          # persistence=True,                 #remembers dropdown value. Used with persistence_type
                          # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
-             dcc.Graph(id='our_graph', style={'width': "50%"})
-             ],),
+             dcc.Graph(id='our_graph', style={'width': "100%"}),
+             dcc.RangeSlider(
+                id='my-range-slider',  # any name you'd like to give it
+                marks={
+                    2004: '2004',
+                    2005: {'label': '2005', 'style': {'color': '#f50', 'font-weight': 'bold'}},
+                    2006: '2006',
+                    2008: '2008',
+                    2010: '2010',
+                    2012: '2012',
+                    2014: '2014',
+                    2016: '2016',
+                    2018: '2018',
+                    2020: '2020',
+                    2021: '2021',
+                },
+                step=1,                # number of steps between values
+                min=2004,
+                max=2021,
+                value=[2004, 2005],     # default value initially chosen
+                dots=True,             # True, False - insert dots, only when step>1
+                allowCross=False,      # True,False - Manage handle crossover
+                disabled=False,        # True,False - disable handle
+                pushable=2,            # any number, or True with multiple handles
+                updatemode='mouseup',  # 'mouseup', 'drag' - update value method
+                included=True,         # True, False - highlight handle
+                vertical=False,        # True, False - vertical, horizontal slider
+                # hight of slider (pixels) when vertical=True
+                verticalHeight=900,
+                className='None',
+                tooltip={'always_visible': False,  # show current slider values
+                         'placement': 'bottom'},
+            ),
+        ],),
 
     ],),
+
+
+    html.Div(style={'width': "50%"}, children=[
+        html.Div([
+            dcc.Dropdown(id='column_picker',
+                         options=[
+                            {'label': 'Texas', 'value': 'price_texas'},
+                            {'label': 'Brent', 'value': 'price_brent'},
+                         ],
+                         optionHeight=35,  # height/space between dropdown options
+                         # dropdown value selected automatically when page loads
+                         value='price_texas',
+                         disabled=False,  # disable dropdown value selection
+                         multi=False,  # allow multiple dropdown values to be selected
+                         searchable=True,  # allow user-searching of dropdown values
+                         search_value='',  # remembers the value searched in dropdown
+                         # gray, default text shown when no option is selected
+                         placeholder='Please select...',
+                         clearable=True,  # allow user to removes the selected value
+                         # use dictionary to define CSS styles of your dropdown
+                         style={'width': "50%"},
+                         # className='select_box',           #activate separate CSS document in assets folder
+                         # persistence=True,                 #remembers dropdown value. Used with persistence_type
+                         # persistence_type='memory'         #remembers dropdown value selected until...
+                         ),
+            dcc.Dropdown(id='conflict_picker_two',
+                         options=conflict_options,
+                         optionHeight=35,  # height/space between dropdown options
+                         # dropdown value selected automatically when page loads
+                         value='Gesamt',
+                         disabled=False,  # disable dropdown value selection
+                         multi=False,  # allow multiple dropdown values to be selected
+                         searchable=True,  # allow user-searching of dropdown values
+                         search_value='',  # remembers the value searched in dropdown
+                         # gray, default text shown when no option is selected
+                         placeholder='Please select...',
+                         clearable=True,  # allow user to removes the selected value
+                         # use dictionary to define CSS styles of your dropdown
+                         style={'width': "50%"},
+                         # className='select_box',           #activate separate CSS document in assets folder
+                         # persistence=True,                 #remembers dropdown value. Used with persistence_type
+                         # persistence_type='memory'         #remembers dropdown value selected until...
+                         ),
+             dcc.Graph(id='our_graph_two', style={'width': "100%"}),
+             ],),
+
+    ],)
 
 
 
@@ -227,6 +309,7 @@ app.layout = html.Div(className='row', children=[
     Input(component_id='country_picker', component_property='value'),
     Input(component_id='kip_picker', component_property='value'),
     Input(component_id='conflict_picker', component_property='value'),
+    #Input('my-range-slider', 'value')
 
 )
 def build_graph(country_chosen, kip_chosen, conflict_chosen):
@@ -236,19 +319,19 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 
 # Add traces
-    fig.add_trace(
-        go.Scatter(x=dff['year'], y=dff[kip_chosen],
-                   name="Militärausgaben in UsSD", mode='lines+markers'),
-        secondary_y=False,
-    )
 
     fig.add_trace(
         go.Bar(x=war_table['year'],
                y=war_table[conflict_chosen],
-               visible=True,
-               name=str(conflict_chosen)),
+               name=str(conflict_chosen),
+               opacity=0.5),
         secondary_y=True,
 
+    )
+    fig.add_trace(
+        go.Scatter(x=dff['year'], y=dff[kip_chosen],
+                   name=str(kip_chosen), mode='lines+markers'),
+        secondary_y=False,
     )
 
 
@@ -257,17 +340,66 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 # Add figure title
     fig.update_layout(
-        title_text="Double Y Axis Example"
+        title_text="Verhältnis Krieg vs <b>" +
+        str(kip_chosen)+"</b> in <b>"+str(country_chosen)+"</b>"
     )
 
 # Set x-axis title
-    fig.update_xaxes(title_text="Jahr")
+    fig.update_xaxes(title_text="Jahr", range=[2000, 2022])
 
 # Set y-axes titles
     fig.update_yaxes(
         title_text='<b>primary</b> '+str(kip_chosen), secondary_y=False)
     fig.update_yaxes(
         title_text='<b>secondary</b> '+str(conflict_chosen), secondary_y=True)
+
+    return fig
+
+
+@app.callback(
+    Output(component_id='our_graph_two', component_property='figure'),
+    Input(component_id='column_picker', component_property='value'),
+    Input(component_id='conflict_picker_two', component_property='value')
+
+)
+def build_graph(column_chosen, conflict_chosen_two):
+    df = oil_prices
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+
+# Add traces
+
+    fig.add_trace(
+        go.Bar(x=war_table['year'],
+               y=war_table[conflict_chosen_two],
+               name=str(conflict_chosen_two),
+               opacity=0.5),
+        secondary_y=True,
+
+    )
+    fig.add_trace(
+        go.Scatter(x=df['year'], y=df[column_chosen],
+                   name=str(column_chosen), mode='lines+markers'),
+        secondary_y=False,
+    )
+
+
+# add dropdown menus to the figure
+
+
+# Add figure title
+    fig.update_layout(
+        title_text="Verhältnis Krieg vs " + "<b>"+str(column_chosen)+"</b>"
+    )
+
+# Set x-axis title
+    fig.update_xaxes(title_text="Jahr", range=[2001, 2022])
+
+# Set y-axes titles
+    fig.update_yaxes(
+        title_text='<b>primary</b> '+str(column_chosen), secondary_y=False)
+    fig.update_yaxes(
+        title_text='<b>secondary</b> '+str(conflict_chosen_two), secondary_y=True)
 
     return fig
 
