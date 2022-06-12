@@ -1,4 +1,5 @@
 # import required packages
+from re import template
 from turtle import color
 import pandas as pd
 import plotly.express as px  # (version 4.7.0 or higher)
@@ -15,9 +16,12 @@ oil_prices = pd.read_csv('oil_brent_texas.csv', header=[0])
 bachelor_table = pd.read_csv('bachelor_tablde.csv')
 bachelor_table = bachelor_table.astype({'year': int})
 
-# Einelsen der Konflikttabelle
+# Einlesen der Konflikttabelle
 war_table = pd.read_csv('war_table.csv')
 war_table = war_table.astype({'year': int})
+
+# Einlesen der Google Trends für Konflikte
+google_trends_conflicts = pd.read_csv('conflicts_google_trends.csv')
 
 # Rename der KIP Tabellenköpfe
 bachelor_table = bachelor_table.rename(columns={
@@ -53,6 +57,17 @@ for conflict in war_table:
 
 app = Dash(__name__)
 
+theme = {
+    'dark': True,
+    'detail': '#007439',
+    'primary': '#00EA64',
+    'secondary': '#6E6E6E',
+}
+
+
+fig_google_trends_conflicts = px.scatter(
+    google_trends_conflicts, x='week', y=google_trends_conflicts.columns)
+fig_google_trends_conflicts.update_traces(mode='lines+markers')
 
 fig_nato_spendings = px.line(
     nato_spendings, x="year", y="spendings", color="country", labels={
@@ -144,6 +159,9 @@ app.layout = html.Div(children=[
         dcc.Graph(id="graph2", figure=fig_nato_spendings,
                   style={'display': 'inline-block'})
     ], ),
+
+
+
     html.Div(children=[
         dcc.Graph(id="graph3",  figure=fig_oil_prices,
                   style={'display': 'inline-block'}),
@@ -244,7 +262,7 @@ app.layout = html.Div(children=[
     ],),
 
 
-    html.Div(style={'width': "50%"}, children=[
+    html.Div(style={'width': "100%"}, children=[
         html.Div([
             dcc.Dropdown(id='column_picker',
                          options=[
@@ -260,9 +278,9 @@ app.layout = html.Div(children=[
                          search_value='',  # remembers the value searched in dropdown
                          # gray, default text shown when no option is selected
                          placeholder='Please select...',
-                         clearable=True,  # allow user to removes the selected value
+                         clearable=False,  # allow user to removes the selected value
                          # use dictionary to define CSS styles of your dropdown
-                         style={'width': "50%"},
+                         style={'width': "50%", 'display': 'inline-block'},
                          # className='select_box',           #activate separate CSS document in assets folder
                          # persistence=True,                 #remembers dropdown value. Used with persistence_type
                          # persistence_type='memory'         #remembers dropdown value selected until...
@@ -278,17 +296,22 @@ app.layout = html.Div(children=[
                          search_value='',  # remembers the value searched in dropdown
                          # gray, default text shown when no option is selected
                          placeholder='Please select...',
-                         clearable=True,  # allow user to removes the selected value
+                         clearable=False,  # allow user to removes the selected value
                          # use dictionary to define CSS styles of your dropdown
                          style={'width': "50%"},
                          # className='select_box',           #activate separate CSS document in assets folder
                          # persistence=True,                 #remembers dropdown value. Used with persistence_type
                          # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
-             dcc.Graph(id='our_graph_two', style={'width': "100%"}),
+             dcc.Graph(id='our_graph_two', style={
+                       'width': "100%", 'display': 'inline-block'}),
              ],),
 
-    ],)
+    ],),
+
+    html.Div(children=[
+        dcc.Graph(id="graph5",  figure=fig_google_trends_conflicts)
+    ], ),
 
 
 
@@ -389,7 +412,8 @@ def build_graph(column_chosen, conflict_chosen_two):
 
 # Add figure title
     fig.update_layout(
-        title_text="Verhältnis Krieg vs " + "<b>"+str(column_chosen)+"</b>"
+        title_text="Verhältnis Krieg vs " + "<b>"+str(column_chosen)+"</b>",
+        template='plotly_dark'
     )
 
 # Set x-axis title
