@@ -35,9 +35,8 @@ google_trends_conflicts = google_trends_conflicts.rename(columns={
     'afg_2021_world': 'Machtübernahme Taliban in Afghanistan 2021 (WLD)',
     'irak_2020_germany': 'Irakkrise Anfang 2020 (DEU)',
     'irak_2020_world': 'Irakkrise Anfang 2020 (WLD)',
-    'ukr_2014_germany': 'Annektion der Krim durch Russland 2014 (WLD)',
-    'ukr_2014_germany': 'Annektion der Krim durch Russland 2014 (DEU)',
-    'ukr_2014_world': 'Annektion der Krim durch Russland 2014 (WLD)',
+    'ukr_2014_germany': 'Annexion der Krim durch Russland 2014 (DEU)',
+    'ukr_2014_world': 'Annexion der Krim durch Russland 2014 (WLD)',
     'ukr_2022_germany': 'Angriff Russland auf die Ukraine 2022 (DEU)',
     'ukr_2022_world': 'Angriff Russland auf die Ukraine 2022 (WLD)',
 
@@ -92,9 +91,10 @@ for conflict in war_table:
 
 # GoogleTrendsConflicts
 fig_google_trends_conflicts = px.scatter(
-    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
-        'week': 'Wochen',
-        'value': 'Suchanfragen in Prozent'
+    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", trendline='ols', labels={
+        'week': 'Woche',
+        'value': 'Suchanfragen in Prozent',
+        'variable': 'Konflikt'
     })
 fig_google_trends_conflicts.update_traces(mode='lines+markers')
 
@@ -111,6 +111,32 @@ app.layout = html.Div(children=[
         html.H6(children='Bachelor Thesis 2022',
                 style={'marginTop': '-20px', 'marginBottom': '30px'})
     ], style={'textAlign': 'center'}),
+
+    html.Div(children=[
+        ################### Filter box ######################
+
+
+
+        ##### HERE insert the code for four boxes & graph #########
+        html.Div(children=[
+            html.Div(children=[
+                html.H3(df_count, style={'fontWeight': 'bold'}),
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns number-stat-box",
+                style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+            html.Div(children=[], className="two columns",
+                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[], className="two columns",
+                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[], className="two columns",
+                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[], className="two columns",
+                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[], className="two columns",
+                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+
+
+        ], className="twelve columns")
+    ]),
 
 
 
@@ -131,17 +157,7 @@ app.layout = html.Div(children=[
         ], className="four columns",
             style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
-        html.Div(children=[
-            html.H3(df_count, style={'fontWeight': 'bold'}),
-            html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns number-stat-box",
-            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
-        html.Div(children=[], className="two columns",
-                 style={'padding': '2rem', 'marginLeft': '9.5rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-        html.Div(children=[], className="two columns",
-                 style={'padding': '2rem', 'marginLeft': '9.5rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-        html.Div(children=[], className="two columns",
-                 style={'padding': '2rem', 'marginLeft': '9.5rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-        ##### HERE insert the code for four boxes & graph #########
+
         html.Div(children=[
             # Line chart for accidents per day
             html.Div(children=[
@@ -224,7 +240,7 @@ app.layout = html.Div(children=[
                              search_value='',  # remembers the value searched in dropdown
                              # gray, default text shown when no option is selected
                              placeholder='Please select...',
-                             clearable=True,  # allow user to removes the selected value
+                             clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
                              style={'width': "50%"},
                              # className='select_box',           #activate separate CSS document in assets folder
@@ -242,7 +258,7 @@ app.layout = html.Div(children=[
                              search_value='',  # remembers the value searched in dropdown
                              # gray, default text shown when no option is selected
                              placeholder='Please select...',
-                             clearable=True,  # allow user to removes the selected value
+                             clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
                              style={'width': "50%"},
                              # className='select_box',           #activate separate CSS document in assets folder
@@ -260,7 +276,7 @@ app.layout = html.Div(children=[
                              search_value='',  # remembers the value searched in dropdown
                              # gray, default text shown when no option is selected
                              placeholder='Please select...',
-                             clearable=True,  # allow user to removes the selected value
+                             clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
                              style={'width': "50%"},
                              # className='select_box',           #activate separate CSS document in assets folder
