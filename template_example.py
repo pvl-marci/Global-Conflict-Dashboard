@@ -27,6 +27,10 @@ df_count += 1
 google_trends_conflicts = pd.read_csv('conflicts_google_trends.csv')
 df_count += 1
 
+google_trends_afg_ukr_absolute = pd.read_csv('afg_ukr_difference.csv')
+df_count += 1
+
+
 # Rename der KIP Tabellenköpfe
 google_trends_conflicts = google_trends_conflicts.rename(columns={
     'afg_2010_germany': 'Karfreitagsgefecht Afghanistan 2010 (DEU)',
@@ -67,8 +71,8 @@ war_table = war_table.rename(columns={
 
 # rename der KIP Tabellenköpfe
 oil_prices = oil_prices.rename(columns={
-    'price_texas': 'Preis West Texas Intermediate (je Barrel in USD)',
-    'price_brent': 'Preis UK Brent (je Barrel in USD)',
+    'price_texas': 'WTI (USD je Barrel)',
+    'price_brent': 'UK Brent (USD je Barrel)',
 })
 
 # Arrays für Dropdown
@@ -99,6 +103,8 @@ fig_google_trends_conflicts = px.scatter(
 fig_google_trends_conflicts.update_traces(mode='lines+markers')
 
 
+# fig_google_trends_ukr_afg.update_traces(mode='lines+markers')
+
 # create an app
 app = Dash(__name__)
 
@@ -126,23 +132,23 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
 
 
         ], className="twelve columns")
@@ -175,13 +181,13 @@ app.layout = html.Div(children=[
                 dcc.Dropdown(id='column_picker',
                              options=[
                                  {'label': 'West Texas Intermediate',
-                                     'value': 'Preis West Texas Intermediate (je Barrel in USD)'},
+                                     'value': 'WTI (USD je Barrel)'},
                                  {'label': 'Brent',
-                                     'value': 'Preis UK Brent (je Barrel in USD)'},
+                                     'value': 'UK Brent (USD je Barrel)'},
                              ],
                              optionHeight=35,  # height/space between dropdown options
                              # dropdown value selected automatically when page loads
-                             value='Preis West Texas Intermediate (je Barrel in USD)',
+                             value='WTI (USD je Barrel)',
                              disabled=False,  # disable dropdown value selection
                              multi=False,  # allow multiple dropdown values to be selected
                              searchable=True,  # allow user-searching of dropdown values
@@ -214,7 +220,7 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='kip_world_graph'),
-            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
     ], className="twelve columns"),
     html.Div(children=[
@@ -295,7 +301,7 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='country_kip_graph'),
-            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
     ], className="twelve columns"),
     html.Div(children=[
@@ -323,14 +329,52 @@ app.layout = html.Div(children=[
         html.Div(children=[
             # Line chart for accidents per day
             html.Div(children=[
+                html.Button('Toggle YouTube/Google',
+                            id='submit-val-1', n_clicks=0),
                 dcc.Graph(id='google_trends_conflicts_graph',
                           figure=fig_google_trends_conflicts),
-            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-        ])
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                html.Button('Trendlinie on/off',
+                            id='trendline_on_off', n_clicks=0),
+                dcc.Graph(id='google_trends_afg_ukr'),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', })
+
+        ],
+        )
     ], className="twelve columns"),
 
 
 ], style={'padding': '2rem'})
+
+
+@app.callback(
+    Output(component_id='google_trends_afg_ukr', component_property='figure'),
+    [Input('trendline_on_off', 'n_clicks')],
+
+
+
+
+)
+def update_output_div(n_clicks):
+    df = google_trends_afg_ukr_absolute
+
+    if (n_clicks % 2) == 0:
+        fig = px.scatter(
+            df, x='week', y=df.columns, trendline='ols', title="<b>Google-Trends</b> in Wochen", labels={
+                'week': 'Woche',
+                'value': 'Suchanfragen in Prozent',
+                'variable': '<b>Konflikt</b><br>'
+            })
+    else:
+        fig = px.scatter(
+            df, x='week', y=df.columns, title="<b>Google-Trends</b> in Wochen", labels={
+                'week': 'Woche',
+                'value': 'Suchanfragen in Prozent',
+                'variable': '<b>Konflikt</b><br>'
+            })
+
+    return fig
 
 
 @ app.callback(
