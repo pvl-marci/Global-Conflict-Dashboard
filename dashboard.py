@@ -207,7 +207,7 @@ app.layout = html.Div(children=[
                          # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
             dcc.Dropdown(id='conflict_picker',
-                         options=conflict_options,
+                         options=conflict_options[2:],
                          optionHeight=35,  # height/space between dropdown options
                          # dropdown value selected automatically when page loads
                          value='Gesamt',
