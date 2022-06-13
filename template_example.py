@@ -8,18 +8,42 @@ from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from datetime import datetime as dt
 
+df_count = 0
+
 # Dataframes
 oil_prices = pd.read_csv('oil_brent_texas.csv', header=[0])
+df_count += 1
 # KIP Ländertabelle
 bachelor_table = pd.read_csv('bachelor_tablde.csv')
 bachelor_table = bachelor_table.astype({'year': int})
+df_count += 1
 
 # Einlesen der Konflikttabelle
 war_table = pd.read_csv('war_table.csv')
 war_table = war_table.astype({'year': int})
+df_count += 1
 
 # Einlesen der Google Trends für Konflikte
 google_trends_conflicts = pd.read_csv('conflicts_google_trends.csv')
+df_count += 1
+
+# Rename der KIP Tabellenköpfe
+google_trends_conflicts = google_trends_conflicts.rename(columns={
+    'afg_2010_germany': 'Karfreitagsgefecht Afghanistan 2010 (DEU)',
+    'afg_2010_world': 'Karfreitagsgefecht Afghanistan 2010 (WLD)',
+    'afg_2021_germany': 'Machtübernahme Taliban in Afghanistan 2021 (DEU)',
+    'afg_2021_world': 'Machtübernahme Taliban in Afghanistan 2021 (WLD)',
+    'irak_2020_germany': 'Irakkrise Anfang 2020 (DEU)',
+    'irak_2020_world': 'Irakkrise Anfang 2020 (WLD)',
+    'ukr_2014_germany': 'Annektion der Krim durch Russland 2014 (WLD)',
+    'ukr_2014_germany': 'Annektion der Krim durch Russland 2014 (DEU)',
+    'ukr_2014_world': 'Annektion der Krim durch Russland 2014 (WLD)',
+    'ukr_2022_germany': 'Angriff Russland auf die Ukraine 2022 (DEU)',
+    'ukr_2022_world': 'Angriff Russland auf die Ukraine 2022 (WLD)',
+
+
+
+})
 
 # Rename der KIP Tabellenköpfe
 bachelor_table = bachelor_table.rename(columns={
@@ -48,7 +72,7 @@ oil_prices = oil_prices.rename(columns={
     'price_brent': 'Preis UK Brent (je Barrel in USD)',
 })
 
-
+# Arrays für Dropdown
 # KIP Array für Dropdown
 kip_options = []
 for kip in bachelor_table:
@@ -68,13 +92,13 @@ for conflict in war_table:
 
 # GoogleTrendsConflicts
 fig_google_trends_conflicts = px.scatter(
-    google_trends_conflicts, x='week', y=google_trends_conflicts.columns)
+    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
+        'week': 'Wochen',
+        'value': 'Suchanfragen in Prozent'
+    })
 fig_google_trends_conflicts.update_traces(mode='lines+markers')
 
-fig_google_trends_conflicts.update_layout(
-    title_text="<b>Google-Trends</b> in Wochen",
-    template='plotly_white'
-)
+
 # create an app
 app = Dash(__name__)
 
@@ -93,7 +117,7 @@ app.layout = html.Div(children=[
     html.Div(children=[
         ################### Filter box ######################
         html.Div(children=[
-            html.H4(children='Das Verhältnis von Konfliktart auf die Weltwirtschaft'),
+            html.H4(children='Konfliktart vs Weltwirtschaft'),
             html.H6(children='Erklärung',
                     style={'marginTop': '-15px', 'marginBottom': '30px'}),
             html.P(children='Diese zwei Graphen zeigen das Verhältnis von globalen Konflikten zu weltwirtschaftlichen Kennzahlen.'),
@@ -107,6 +131,16 @@ app.layout = html.Div(children=[
         ], className="four columns",
             style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
+        html.Div(children=[
+            html.H3(df_count, style={'fontWeight': 'bold'}),
+            html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns number-stat-box",
+            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+        html.Div(children=[], className="two columns",
+                 style={'padding': '2rem', 'marginLeft': '9.5rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+        html.Div(children=[], className="two columns",
+                 style={'padding': '2rem', 'marginLeft': '9.5rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+        html.Div(children=[], className="two columns",
+                 style={'padding': '2rem', 'marginLeft': '9.5rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ##### HERE insert the code for four boxes & graph #########
         html.Div(children=[
             # Line chart for accidents per day
@@ -153,13 +187,28 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='kip_world_graph'),
-            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="eight columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
     ]),
     html.Div(children=[
         ################### Filter box ######################
-        html.Div(children=[], className="four columns",
-                 style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+        html.Div(children=[
+            html.H4(
+                 children='Konfliktart vs Wirtschaft in den G8+5 Staaten'),
+             html.H6(children='Erklärung',
+                     style={'marginTop': '-15px', 'marginBottom': '30px'}),
+             html.P(children='Dieser Graph zeigt die Anzahl der Google-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
+             html.P(
+                 children='Auf der rechten Seite können die jeweiligen Keyword ausgeblendet und eingeblendet werden.'),
+             html.P(children='(DEU) steht für Suchanfragen aus Deutschland'),
+             html.P(children='(WLD) steht für weltweite Suchanfragen'),
+             html.Br(),
+             html.Br(),
+             html.Label(children='Datenquellen: ',
+                        style={'font-weight': 'bold'}),
+             html.A(children='Google-Trends',
+                    href='https://www.google.com/trends', target="_blank"), ], className="four columns",
+            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
         ##### HERE insert the code for four boxes & graph #########
         html.Div(children=[
@@ -218,22 +267,38 @@ app.layout = html.Div(children=[
                              # persistence=True,                 #remembers dropdown value. Used with persistence_type
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
-             dcc.Graph(id='country_kip_graph'),
-             ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                dcc.Graph(id='country_kip_graph'),
+            ], className="eight columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
     ]),
     html.Div(children=[
         ################### Filter box ######################
-        html.Div(children=[], className="four columns",
-                 style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+        html.Div(children=[
+             html.H4(
+                 children='Google Suchen nach Konfliktregion'),
+             html.H6(children='Erklärung',
+                     style={'marginTop': '-15px', 'marginBottom': '30px'}),
+             html.P(children='Dieser Graph zeigt die Anzahl der Google-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
+             html.P(
+                 children='Auf der rechten Seite können die jeweiligen Keyword ausgeblendet und eingeblendet werden.'),
+             html.P(children='(DEU) steht für Suchanfragen aus Deutschland'),
+             html.P(children='(WLD) steht für weltweite Suchanfragen'),
+             html.Br(),
+             html.Br(),
+             html.Label(children='Datenquellen: ',
+                        style={'font-weight': 'bold'}),
+             html.A(children='Google-Trends',
+                    href='https://www.google.com/trends', target="_blank"),
+             ], className="four columns",
+            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
         ##### HERE insert the code for four boxes & graph #########
         html.Div(children=[
             # Line chart for accidents per day
             html.Div(children=[
-             dcc.Graph(id='google_trends_conflicts_graph',
-                       figure=fig_google_trends_conflicts),
-             ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                dcc.Graph(id='google_trends_conflicts_graph',
+                          figure=fig_google_trends_conflicts),
+            ], className="eight columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
     ]),
 
