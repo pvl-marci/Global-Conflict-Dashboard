@@ -1,17 +1,20 @@
 from re import template
 from turtle import color
 import pandas as pd
+import dash
 import plotly.express as px  # (version 4.7.0 or higher)
 import plotly.graph_objects as go
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, State
 from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from datetime import datetime as dt
+from datetime import date
 
 df_count = 0
 
 # Dataframes
 oil_prices = pd.read_csv('oil_brent_texas.csv', header=[0])
+oil_prices['year'] = pd.to_datetime(oil_prices['year'], format='%Y')
 df_count += 1
 # KIP Ländertabelle
 bachelor_table = pd.read_csv('bachelor_tablde.csv')
@@ -92,6 +95,7 @@ for conflict in war_table:
     conflict_options.append({'label': str(conflict), 'value': conflict})
 
 # Figures
+figgy = px.line(oil_prices, x='year', y='WTI (USD je Barrel)')
 
 # GoogleTrendsConflicts
 fig_google_trends_conflicts = px.scatter(
@@ -128,27 +132,27 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
 
 
         ], className="twelve columns")
@@ -181,7 +185,7 @@ app.layout = html.Div(children=[
                 dcc.Dropdown(id='column_picker',
                              options=[
                                  {'label': 'West Texas Intermediate',
-                                     'value': 'WTI (USD je Barrel)'},
+                                  'value': 'WTI (USD je Barrel)'},
                                  {'label': 'Brent',
                                      'value': 'UK Brent (USD je Barrel)'},
                              ],
@@ -196,7 +200,8 @@ app.layout = html.Div(children=[
                              placeholder='Please select...',
                              clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
-                             style={'width': "50%", 'display': 'inline-block'},
+                             style={'width': "50%",
+                                    'display': 'inline-block'},
                              # className='select_box',           #activate separate CSS document in assets folder
                              # persistence=True,                 #remembers dropdown value. Used with persistence_type
                              # persistence_type='memory'         #remembers dropdown value selected until...
@@ -221,6 +226,23 @@ app.layout = html.Div(children=[
                              ),
                 dcc.Graph(id='kip_world_graph'),
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                dcc.Textarea(
+                    id='textarea',
+                    value='Textarea content initialized\nwith multiple lines of text',
+                    style={'width': '100%', 'height': 50},
+                ),
+                dcc.DatePickerSingle(
+                    id='date-picker-single',
+                    date='2017-06-21',
+                    display_format='MMM Do, YY'
+                ),
+                html.Button('submit',
+                            id='submit',  style={'marginLeft': '.3rem'}),
+                html.Button('clear',
+                            id='clear',  style={'marginLeft': '.3rem'}),
+                dcc.Graph(id='testgraph', figure=figgy)
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', })
         ])
     ], className="twelve columns"),
     html.Div(children=[
@@ -349,12 +371,29 @@ app.layout = html.Div(children=[
 
 
 @app.callback(
+    Output(component_id='testgraph',
+           component_property='figure'),
+    State(component_id='date-picker-single', component_property='date'),
+    State(component_id='textarea', component_property='value'),
+    Input(component_id='submit', component_property='n_clicks'),
+    Input(component_id='clear', component_property='n_clicks'),
+)
+def update_output_div(date, conflict, n_clicks, value):
+    ctx = dash.callback_context
+    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    fig = figgy
+
+    if trigger_id == "submit":
+        fig.add_annotation(x=date, y=60, text=conflict)
+        return fig
+    else:
+        fig = px.line(oil_prices, x='year', y='WTI (USD je Barrel)')
+        fig.
+
+
+@app.callback(
     Output(component_id='google_trends_afg_ukr', component_property='figure'),
     [Input('trendline_on_off', 'n_clicks')],
-
-
-
-
 )
 def update_output_div(n_clicks):
     df = google_trends_afg_ukr_absolute
