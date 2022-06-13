@@ -121,18 +121,28 @@ app.layout = html.Div(children=[
         html.Div(children=[
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns number-stat-box",
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
                 style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
-            html.Div(children=[], className="two columns",
-                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-            html.Div(children=[], className="two columns",
-                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-            html.Div(children=[], className="two columns",
-                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-            html.Div(children=[], className="two columns",
-                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-            html.Div(children=[], className="two columns",
-                     style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                html.H3(df_count, style={'fontWeight': 'bold'}),
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                html.H3(df_count, style={'fontWeight': 'bold'}),
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                html.H3(df_count, style={'fontWeight': 'bold'}),
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                html.H3(df_count, style={'fontWeight': 'bold'}),
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            html.Div(children=[
+                html.H3(df_count, style={'fontWeight': 'bold'}),
+                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+                style={'padding': '2rem', 'marginLeft': '8rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
 
 
         ], className="twelve columns")
@@ -186,7 +196,7 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Dropdown(id='conflict_picker_two',
-                             options=conflict_options,
+                             options=conflict_options[1:],
                              optionHeight=35,  # height/space between dropdown options
                              # dropdown value selected automatically when page loads
                              value='Gesamt',
@@ -267,7 +277,7 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Dropdown(id='conflict_picker',
-                             options=conflict_options,
+                             options=conflict_options[1:],
                              optionHeight=35,  # height/space between dropdown options
                              # dropdown value selected automatically when page loads
                              value='Gesamt',
