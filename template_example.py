@@ -91,10 +91,10 @@ for conflict in war_table:
 
 # GoogleTrendsConflicts
 fig_google_trends_conflicts = px.scatter(
-    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", trendline='ols', labels={
+    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
         'week': 'Woche',
         'value': 'Suchanfragen in Prozent',
-        'variable': 'Konflikt'
+        'variable': '<b>Konflikt</b><br>'
     })
 fig_google_trends_conflicts.update_traces(mode='lines+markers')
 
@@ -151,10 +151,11 @@ app.layout = html.Div(children=[
             html.P(children='Im oberen Dropdown wird die KPI ausgewählt und im unteren Dropdown wird die Konfliktart ausgewählt.'),
             html.Br(),
             html.Br(),
-            html.Label(children='Quellen: ', style={'font-weight': 'bold'}),
+            html.Label(children='Datenquellen: ',
+                       style={'font-weight': 'bold'}),
             html.A(children='Konfliktarten nach HIIK',
                    href='https://de.statista.com/statistik/daten/studie/2736/umfrage/entwicklung-der-anzahl-von-konflikten-weltweit/', target="_blank"),
-        ], className="four columns",
+        ], className="two columns",
             style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
 
@@ -203,9 +204,9 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='kip_world_graph'),
-            ], className="eight columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
-    ]),
+    ], className="twelve columns"),
     html.Div(children=[
         ################### Filter box ######################
         html.Div(children=[
@@ -223,7 +224,7 @@ app.layout = html.Div(children=[
              html.Label(children='Datenquellen: ',
                         style={'font-weight': 'bold'}),
              html.A(children='Google-Trends',
-                    href='https://www.google.com/trends', target="_blank"), ], className="four columns",
+                    href='https://www.google.com/trends', target="_blank"), ], className="two columns",
             style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
         ##### HERE insert the code for four boxes & graph #########
@@ -284,9 +285,9 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='country_kip_graph'),
-            ], className="eight columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
-    ]),
+    ], className="twelve columns"),
     html.Div(children=[
         ################### Filter box ######################
         html.Div(children=[
@@ -305,7 +306,7 @@ app.layout = html.Div(children=[
                         style={'font-weight': 'bold'}),
              html.A(children='Google-Trends',
                     href='https://www.google.com/trends', target="_blank"),
-             ], className="four columns",
+             ], className="two columns",
             style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
 
         ##### HERE insert the code for four boxes & graph #########
@@ -314,9 +315,9 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 dcc.Graph(id='google_trends_conflicts_graph',
                           figure=fig_google_trends_conflicts),
-            ], className="eight columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="six columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
         ])
-    ]),
+    ], className="twelve columns"),
 
 
 ], style={'padding': '2rem'})
