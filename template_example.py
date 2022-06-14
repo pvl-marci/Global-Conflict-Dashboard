@@ -1,20 +1,28 @@
+import copy
 from re import template
 from turtle import color
+from numpy import indices
 import pandas as pd
 import dash
+import plotly
 import plotly.express as px  # (version 4.7.0 or higher)
 import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output, State
 from plotly.subplots import make_subplots
 import statsmodels.api as sm
-from datetime import datetime as dt
+import datetime as dt
 from datetime import date
+
 
 df_count = 0
 
 # Dataframes
 oil_prices = pd.read_csv('oil_brent_texas.csv', header=[0])
-oil_prices['year'] = pd.to_datetime(oil_prices['year'], format='%Y')
+
+oil_prices_annotations = pd.read_csv('oil_brent_texas.csv', header=[0])
+oil_prices_annotations['year'] = pd.to_datetime(
+    oil_prices_annotations['year'], format='%Y')
+
 df_count += 1
 # KIP Ländertabelle
 bachelor_table = pd.read_csv('bachelor_tablde.csv')
@@ -46,9 +54,6 @@ google_trends_conflicts = google_trends_conflicts.rename(columns={
     'ukr_2014_world': 'Annexion der Krim durch Russland 2014 (WLD)',
     'ukr_2022_germany': 'Angriff Russland auf die Ukraine 2022 (DEU)',
     'ukr_2022_world': 'Angriff Russland auf die Ukraine 2022 (WLD)',
-
-
-
 })
 
 # Rename der KIP Tabellenköpfe
@@ -78,6 +83,11 @@ oil_prices = oil_prices.rename(columns={
     'price_brent': 'UK Brent (USD je Barrel)',
 })
 
+oil_prices_annotations = oil_prices_annotations.rename(columns={
+    'price_texas': 'WTI (USD je Barrel)',
+    'price_brent': 'UK Brent (USD je Barrel)',
+})
+
 # Arrays für Dropdown
 # KIP Array für Dropdown
 kip_options = []
@@ -95,7 +105,7 @@ for conflict in war_table:
     conflict_options.append({'label': str(conflict), 'value': conflict})
 
 # Figures
-figgy = px.line(oil_prices, x='year', y='WTI (USD je Barrel)')
+figgy = px.line(oil_prices_annotations, x='year', y='WTI (USD je Barrel)')
 
 # GoogleTrendsConflicts
 fig_google_trends_conflicts = px.scatter(
@@ -153,8 +163,6 @@ app.layout = html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
                 style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
-
-
         ], className="twelve columns")
     ]),
 
@@ -229,8 +237,8 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 dcc.Textarea(
                     id='textarea',
-                    value='Textarea content initialized\nwith multiple lines of text',
-                    style={'width': '100%', 'height': 50},
+                    value='Ihr Text...',
+                    style={'width': '100%'},
                 ),
                 dcc.DatePickerSingle(
                     id='date-picker-single',
@@ -373,22 +381,37 @@ app.layout = html.Div(children=[
 @app.callback(
     Output(component_id='testgraph',
            component_property='figure'),
-    State(component_id='date-picker-single', component_property='date'),
-    State(component_id='textarea', component_property='value'),
     Input(component_id='submit', component_property='n_clicks'),
     Input(component_id='clear', component_property='n_clicks'),
+    State(component_id='date-picker-single', component_property='date'),
+    State(component_id='textarea', component_property='value'),
+    State(component_id='testgraph', component_property='figure'),
 )
-def update_output_div(date, conflict, n_clicks, value):
+def update_output_div(n_clicks, value, dates, conflict, fig):
     ctx = dash.callback_context
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    fig = figgy
+    figure = plotly.graph_objects.Figure(fig)
 
     if trigger_id == "submit":
-        fig.add_annotation(x=date, y=60, text=conflict)
-        return fig
+
+        # figure.add_shape(type='line',
+        #                  yref='paper', y0=0, y1=1,
+        #                  xref='x', x0=date, x1=date,
+        #                  line=dict(color='MediumPurple',
+        #                            width=1,
+        #                            dash='dot')
+        #                  ),
+        figure.add_vline(x=dt.datetime.strptime(dates, "%Y-%m-%d").timestamp() * 1000,
+                         annotation_text=conflict,
+                         line_width=3, line_dash="dash",
+                         line_color="green")
+        # figure.add_annotation(
+        #     x=date, y=peak, text=conflict, showarrow=False, yshift=False)
+
     else:
-        fig = px.line(oil_prices, x='year', y='WTI (USD je Barrel)')
-        fig.
+        figure = copy.deepcopy(figgy)
+
+    return figure
 
 
 @app.callback(
