@@ -17,6 +17,16 @@ df_count = 0
 
 # Dataframes
 
+# Testdata einlesen
+testdata = pd.read_csv('testdata.csv')
+testdata['year'] = pd.to_datetime(
+    testdata['year'], format='%Y')
+# Array
+testkip = []
+for kip in testdata:
+    testkip.append({'label': str(kip), 'value': kip})
+
+
 # ÖlPreise für erstes DIV
 oil_prices = pd.read_csv('datasets\\oil_brent_texas.csv', header=[0])
 
@@ -132,7 +142,8 @@ for conflict in war_table:
 
 # Figures
 # TODO: Annotationsplatzhalter Figure
-figgy = px.line(oil_prices_annotations, x='year', y='WTI (USD je Barrel)')
+figgy = px.line(testdata, x='year',
+                y='Employment in industry (% of total employment) (modeled ILO estimate) [SL.IND.EMPL.ZS] - World [WLD]')
 
 # YouTube-TrendsConflicts
 fig_yt_trends_conflicts = px.scatter(
@@ -293,6 +304,11 @@ app.layout = html.Div(children=[
                             id='submit',  style={'marginLeft': '.3rem'}),
                 html.Button('clear',
                             id='clear',  style={'marginLeft': '.3rem'}),
+                dcc.Dropdown(id='world_kip_picker',
+                             options=testkip,
+                             value='year',
+                             # placeholder=''
+                             ),
                 dcc.Graph(id='testgraph', figure=figgy)
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', })
         ])
@@ -432,19 +448,24 @@ app.layout = html.Div(children=[
     State(component_id='date-picker-single', component_property='date'),
     State(component_id='textarea', component_property='value'),
     State(component_id='testgraph', component_property='figure'),
+    Input(component_id='world_kip_picker', component_property='value'),
 )
-def update_output_div(n_clicks, value, dates, conflict, fig):
+def update_output_div(n_clicks, value, dates, conflict, fig, kip):
     ctx = dash.callback_context
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
     figure = plotly.graph_objects.Figure(fig)
 
-    if trigger_id == "submit":
-        figure.add_vline(x=dt.datetime.strptime(dates, "%Y-%m-%d").timestamp() * 1000,
-                         annotation_text=conflict,
-                         line_width=3, line_dash="dash",
-                         line_color="green")
+    if trigger_id == 'world_kip_picker':
+        figure = px.line(testdata, x='year',
+                         y=str(kip))
     else:
-        figure = copy.deepcopy(figgy)
+        if trigger_id == "submit":
+            figure.add_vline(x=dt.datetime.strptime(dates, "%Y-%m-%d").timestamp() * 1000,
+                             annotation_text=conflict,
+                             line_width=3, line_dash="dash",
+                             line_color="green")
+        else:
+            figure = copy.deepcopy(figgy)
 
     return figure
 
