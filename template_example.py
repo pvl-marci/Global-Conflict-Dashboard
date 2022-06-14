@@ -143,7 +143,7 @@ for conflict in war_table:
 # Figures
 # TODO: Annotationsplatzhalter Figure
 figgy = px.line(testdata, x='year',
-                y='Employment in industry (% of total employment) (modeled ILO estimate) [SL.IND.EMPL.ZS] - World [WLD]')
+                y='Gesamtbevölkerung')
 
 # YouTube-TrendsConflicts
 fig_yt_trends_conflicts = px.scatter(
@@ -289,7 +289,7 @@ app.layout = html.Div(children=[
                 html.Div(children=[
                     dcc.Input(
                         id='textarea',
-                        placeholder='Description', type='text'
+                        placeholder='Ihre Eingabe...', type='text'
                     )]),
                 dcc.DatePickerSingle(
                     id='date-picker-single', style={'marginTop': '.5rem'},
@@ -471,7 +471,7 @@ def update_output_div(n_clicks):
 
     if (n_clicks % 2) == 0:
         fig = px.scatter(
-            df, x='week', y=df.columns, trendline='ols', title="<b>Google-Trends</b> in Wochen", labels={
+            df, x='week', y=df.columns, trendline='lowess', title="<b>Google-Trends</b> in Wochen", labels={
                 'week': 'Woche',
                 'value': '<b>Suchanfragen</b> in %',
                 'variable': '<b>Konflikt</b><br>'
