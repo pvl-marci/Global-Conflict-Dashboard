@@ -11,38 +11,46 @@ from dash import Dash, dcc, html, Input, Output, State
 from plotly.subplots import make_subplots
 import statsmodels.api as sm
 import datetime as dt
-from datetime import date
 
 
 df_count = 0
 
 # Dataframes
-oil_prices = pd.read_csv('oil_brent_texas.csv', header=[0])
 
-oil_prices_annotations = pd.read_csv('oil_brent_texas.csv', header=[0])
+# ÖlPreise für erstes DIV
+oil_prices = pd.read_csv('datasets\\oil_brent_texas.csv', header=[0])
+
+# TODO: Annotationsdiv  Gesamttabelle erstellen
+oil_prices_annotations = pd.read_csv(
+    'datasets\\oil_brent_texas.csv', header=[0])
 oil_prices_annotations['year'] = pd.to_datetime(
     oil_prices_annotations['year'], format='%Y')
 
 df_count += 1
+
 # KIP Ländertabelle
-bachelor_table = pd.read_csv('bachelor_tablde.csv')
+bachelor_table = pd.read_csv('datasets\\bachelor_table.csv')
 bachelor_table = bachelor_table.astype({'year': int})
 df_count += 1
 
 # Einlesen der Konflikttabelle
-war_table = pd.read_csv('war_table.csv')
+war_table = pd.read_csv('datasets\war_table.csv')
 war_table = war_table.astype({'year': int})
 df_count += 1
 
 # Einlesen der Google Trends für Konflikte
-google_trends_conflicts = pd.read_csv('conflicts_google_trends.csv')
+google_trends_conflicts = pd.read_csv('datasets\\conflicts_google_trends.csv')
 df_count += 1
 
-google_trends_afg_ukr_absolute = pd.read_csv('afg_ukr_difference.csv')
+# TODO: Einlesen der Verhältnisse zwischen Suchanfragen
+google_trends_afg_ukr_absolute = pd.read_csv(
+    'datasets\\afg_ukr_difference.csv')
 df_count += 1
 
+# Einlesen der YouTube Trends für Konflikte
+youtube_trends_conflicts = pd.read_csv('datasets\\yt_trends.csv')
 
-# Rename der KIP Tabellenköpfe
+# Rename der Google-Trends Tabellenköpfe
 google_trends_conflicts = google_trends_conflicts.rename(columns={
     'afg_2010_germany': 'Karfreitagsgefecht Afghanistan 2010 (DEU)',
     'afg_2010_world': 'Karfreitagsgefecht Afghanistan 2010 (WLD)',
@@ -56,6 +64,22 @@ google_trends_conflicts = google_trends_conflicts.rename(columns={
     'ukr_2022_world': 'Angriff Russland auf die Ukraine 2022 (WLD)',
 })
 
+# Rename der YouTube-Trends Tabellenköpfe
+youtube_trends_conflicts = youtube_trends_conflicts.rename(columns={
+    'afg_2010_ger': 'Karfreitagsgefecht Afghanistan 2010 (DEU)',
+    'afg_2010_wld': 'Karfreitagsgefecht Afghanistan 2010 (WLD)',
+    'afg_2021_ger': 'Machtübernahme Taliban in Afghanistan 2021 (DEU)',
+    'afg_2021_wld': 'Machtübernahme Taliban in Afghanistan 2021 (WLD)',
+    'irak_2020_ger': 'Irakkrise Anfang 2020 (DEU)',
+    'irak_2020_wld': 'Irakkrise Anfang 2020 (WLD)',
+    'ukr_2014_ger': 'Annexion der Krim durch Russland 2014 (DEU)',
+    'ukr_2014_wld': 'Annexion der Krim durch Russland 2014 (WLD)',
+    'ukr_2022_ger': 'Angriff Russland auf die Ukraine 2022 (DEU)',
+    'ukr_2022_wld': 'Angriff Russland auf die Ukraine 2022 (WLD)',
+})
+
+# Rename der Tabellenköpfe
+
 # Rename der KIP Tabellenköpfe
 bachelor_table = bachelor_table.rename(columns={
     'brithrate': 'Geburtenrate per 1000 Einwohner',
@@ -67,7 +91,7 @@ bachelor_table = bachelor_table.rename(columns={
     'energy_use': 'Energienutzung in Kg',
 })
 
-# rename der Konflikttabellenköpfe       year,dispute,non_violent_crises,violent_crises,limited_wars,wars,total
+# Rename der Konflikttabellenköpfe
 war_table = war_table.rename(columns={
     'dispute': 'Dispute',
     'non_violent_crises': 'gewaltlose Kriege',
@@ -77,24 +101,26 @@ war_table = war_table.rename(columns={
     'total': 'Gesamt',
 })
 
-# rename der KIP Tabellenköpfe
+# Rename der KIP Tabellenköpfe
 oil_prices = oil_prices.rename(columns={
     'price_texas': 'WTI (USD je Barrel)',
     'price_brent': 'UK Brent (USD je Barrel)',
 })
 
+# TODO:Rename der Ölpreisannotationentabelle. Anpassen wenn mehr KIPs da sind
 oil_prices_annotations = oil_prices_annotations.rename(columns={
     'price_texas': 'WTI (USD je Barrel)',
     'price_brent': 'UK Brent (USD je Barrel)',
 })
 
-# Arrays für Dropdown
+# Arrays für Dropdownmenüs
+
 # KIP Array für Dropdown
 kip_options = []
 for kip in bachelor_table:
     kip_options.append({'label': str(kip), 'value': kip})
 
-'Country Array für Dropdown'
+# Country Array für Dropdown
 country_options = []
 for country in bachelor_table['country_name'].unique():
     country_options.append({'label': str(country), 'value': country})
@@ -105,27 +131,35 @@ for conflict in war_table:
     conflict_options.append({'label': str(conflict), 'value': conflict})
 
 # Figures
+# TODO: Annotationsplatzhalter Figure
 figgy = px.line(oil_prices_annotations, x='year', y='WTI (USD je Barrel)')
 
-# GoogleTrendsConflicts
+# YouTube-TrendsConflicts
+fig_yt_trends_conflicts = px.scatter(
+    youtube_trends_conflicts, x='week', y=youtube_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
+        'week': 'Woche',
+        'value': '<b>Suchanfragen</b> in %',
+        'variable': '<b>Konflikt</b><br>'
+    })
+fig_yt_trends_conflicts.update_traces(mode='lines+markers')
+
+# Google-TrendsConflicts
 fig_google_trends_conflicts = px.scatter(
     google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
         'week': 'Woche',
-        'value': 'Suchanfragen in Prozent',
+        'value': '<b>Suchanfragen</b> in %',
         'variable': '<b>Konflikt</b><br>'
     })
 fig_google_trends_conflicts.update_traces(mode='lines+markers')
 
 
-# fig_google_trends_ukr_afg.update_traces(mode='lines+markers')
-
-# create an app
+# Dashapp
 app = Dash(__name__)
 
-# applayout
+# AppLayout
 app.layout = html.Div(children=[
 
-
+    #
     html.Div(children=[
         html.H3(children='global conflicts data'),
         html.H6(children='Bachelor Thesis 2022',
@@ -235,13 +269,23 @@ app.layout = html.Div(children=[
                 dcc.Graph(id='kip_world_graph'),
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
-                dcc.Textarea(
-                    id='textarea',
-                    value='Ihr Text...',
-                    style={'width': '100%'},
-                ),
+                html.Div(children=[
+                    dcc.Input(
+                        id='textarea',
+                        placeholder='Description', type='text',
+                        # style={'width': '225px', 'height': '45px',
+                        #       'margin-top': '1vw'
+                        #       }
+                    )]),
+
+
+                # dcc.Textarea(
+                #     id='textarea',
+                #     value='Ihr Text...',
+                #     style={'width': '100%'},
+                # ),
                 dcc.DatePickerSingle(
-                    id='date-picker-single',
+                    id='date-picker-single', style={'marginTop': '.5rem'},
                     date='2017-06-21',
                     display_format='MMM Do, YY'
                 ),
@@ -260,11 +304,11 @@ app.layout = html.Div(children=[
                  children='Konfliktart vs Wirtschaft in den G8+5 Staaten'),
              html.H6(children='Erklärung',
                      style={'marginTop': '-15px', 'marginBottom': '30px'}),
-             html.P(children='Dieser Graph zeigt die Anzahl der Google-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
+             html.P(children='Dieser Graph zeigt die Anzahl der Google bzw. YouTube-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
              html.P(
                  children='Auf der rechten Seite können die jeweiligen Keyword ausgeblendet und eingeblendet werden.'),
-             html.P(children='(DEU) steht für Suchanfragen aus Deutschland'),
-             html.P(children='(WLD) steht für weltweite Suchanfragen'),
+             html.P(children='(DEU) steht für Suchanfragen aus Deutschland.'),
+             html.P(children='(WLD) steht für weltweite Suchanfragen.'),
              html.Br(),
              html.Br(),
              html.Label(children='Datenquellen: ',
@@ -346,6 +390,8 @@ app.layout = html.Div(children=[
                  children='Auf der rechten Seite können die jeweiligen Keyword ausgeblendet und eingeblendet werden.'),
              html.P(children='(DEU) steht für Suchanfragen aus Deutschland'),
              html.P(children='(WLD) steht für weltweite Suchanfragen'),
+             html.P(
+                 children='Mit einem Klick auf den Button wechselt man zwischen Google- und YouTube-Suchanfragen.'),
              html.Br(),
              html.Br(),
              html.Label(children='Datenquellen: ',
@@ -360,7 +406,7 @@ app.layout = html.Div(children=[
             # Line chart for accidents per day
             html.Div(children=[
                 html.Button('Toggle YouTube/Google',
-                            id='submit-val-1', n_clicks=0),
+                            id='toggle_yt_google_trends', n_clicks=0),
                 dcc.Graph(id='google_trends_conflicts_graph',
                           figure=fig_google_trends_conflicts),
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
@@ -393,21 +439,10 @@ def update_output_div(n_clicks, value, dates, conflict, fig):
     figure = plotly.graph_objects.Figure(fig)
 
     if trigger_id == "submit":
-
-        # figure.add_shape(type='line',
-        #                  yref='paper', y0=0, y1=1,
-        #                  xref='x', x0=date, x1=date,
-        #                  line=dict(color='MediumPurple',
-        #                            width=1,
-        #                            dash='dot')
-        #                  ),
         figure.add_vline(x=dt.datetime.strptime(dates, "%Y-%m-%d").timestamp() * 1000,
                          annotation_text=conflict,
                          line_width=3, line_dash="dash",
                          line_color="green")
-        # figure.add_annotation(
-        #     x=date, y=peak, text=conflict, showarrow=False, yshift=False)
-
     else:
         figure = copy.deepcopy(figgy)
 
@@ -425,17 +460,33 @@ def update_output_div(n_clicks):
         fig = px.scatter(
             df, x='week', y=df.columns, trendline='ols', title="<b>Google-Trends</b> in Wochen", labels={
                 'week': 'Woche',
-                'value': 'Suchanfragen in Prozent',
+                'value': '<b>Suchanfragen</b> in %',
                 'variable': '<b>Konflikt</b><br>'
             })
     else:
         fig = px.scatter(
             df, x='week', y=df.columns, title="<b>Google-Trends</b> in Wochen", labels={
                 'week': 'Woche',
-                'value': 'Suchanfragen in Prozent',
+                'value': '<b>Suchanfragen</b> in %',
                 'variable': '<b>Konflikt</b><br>'
             })
 
+    return fig
+
+
+@app.callback(
+    Output(component_id='google_trends_conflicts_graph',
+           component_property='figure'),
+    [Input('toggle_yt_google_trends', 'n_clicks')],
+)
+def update_output_div(n_clicks):
+
+    if (n_clicks % 2) == 0:
+        fig = fig_google_trends_conflicts
+        fig.update_layout(title="<b>Google-Trends</b> in Wochen")
+    else:
+        fig = fig_yt_trends_conflicts
+        fig.update_layout(title="<b>YouTube-Trends</b> in Wochen")
     return fig
 
 
