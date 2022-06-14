@@ -280,35 +280,27 @@ app.layout = html.Div(children=[
                 dcc.Graph(id='kip_world_graph'),
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
             html.Div(children=[
+                dcc.Dropdown(id='world_kip_picker',
+                             options=testkip[1:],
+                             style={'width': "47.8%", 'marginBottom': '.5rem'},
+                             clearable=False,
+                             placeholder='KPI auswählen..'
+                             ),
                 html.Div(children=[
                     dcc.Input(
                         id='textarea',
-                        placeholder='Description', type='text',
-                        # style={'width': '225px', 'height': '45px',
-                        #       'margin-top': '1vw'
-                        #       }
+                        placeholder='Description', type='text'
                     )]),
-
-
-                # dcc.Textarea(
-                #     id='textarea',
-                #     value='Ihr Text...',
-                #     style={'width': '100%'},
-                # ),
                 dcc.DatePickerSingle(
                     id='date-picker-single', style={'marginTop': '.5rem'},
                     date='2017-06-21',
-                    display_format='MMM Do, YY'
+                    display_format='DD.MM.YYYY'
                 ),
                 html.Button('submit',
                             id='submit',  style={'marginLeft': '.3rem'}),
                 html.Button('clear',
                             id='clear',  style={'marginLeft': '.3rem'}),
-                dcc.Dropdown(id='world_kip_picker',
-                             options=testkip,
-                             value='year',
-                             # placeholder=''
-                             ),
+
                 dcc.Graph(id='testgraph', figure=figgy)
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', })
         ])
