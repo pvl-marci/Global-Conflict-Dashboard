@@ -224,6 +224,10 @@ app.layout = html.Div(children=[
             html.P(children='Im oberen Dropdown wird die KPI ausgewählt und im unteren Dropdown wird die Konfliktart ausgewählt.'),
             html.Br(),
             html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
+            html.Br(),
             html.Label(children='Datenquellen: ',
                        style={'font-weight': 'bold'}),
             html.A(children='Konfliktarten nach HIIK',
@@ -278,7 +282,7 @@ app.layout = html.Div(children=[
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='kip_world_graph'),
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white'}),
             html.Div(children=[
                 dcc.Dropdown(id='world_kip_picker',
                              options=testkip[1:],
@@ -302,7 +306,7 @@ app.layout = html.Div(children=[
                             id='clear',  style={'marginLeft': '.3rem'}),
 
                 dcc.Graph(id='testgraph', figure=figgy)
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', })
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white'})
         ])
     ], className="twelve columns"),
     html.Div(children=[
