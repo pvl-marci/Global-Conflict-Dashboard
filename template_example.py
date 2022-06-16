@@ -1,6 +1,7 @@
 import copy
 from re import template
 from turtle import color
+from matplotlib.pyplot import colorbar
 from numpy import indices
 import pandas as pd
 import dash
@@ -11,16 +12,67 @@ from dash import Dash, dcc, html, Input, Output, State
 from plotly.subplots import make_subplots
 import statsmodels.api as sm
 import datetime as dt
+import plotly.io as plt_io
 
+
+plt_io.templates["custom_dark"] = plt_io.templates["plotly_dark"]
+
+
+# set the paper_bgcolor and the plot_bgcolor to a new color
+plt_io.templates["custom_dark"]['layout']['paper_bgcolor'] = '#272729'
+plt_io.templates["custom_dark"]['layout']['plot_bgcolor'] = '#272729'
+plt_io.templates["custom_dark"]['layout']['plot_bgcolor'] = '#272729'
+
+
+plt_io.templates.default = "custom_dark"
+
+# you may also want to change gridline colors if you are modifying background
+plt_io.templates['custom_dark']['layout']['yaxis']['gridcolor'] = '#4f687d'
+plt_io.templates['custom_dark']['layout']['xaxis']['gridcolor'] = '#4f687d'
 
 df_count = 0
+
+# WorldMap Test
+wars = pd.read_csv('war_and_peace.csv')
+wars = wars.sort_values('type_of_conflict', ascending=True)
+wars = wars.sort_values('year', ascending=True)
+
+
+worldmap = px.choropleth(wars,
+                         locations='location',
+                         color="type_of_conflict",
+                         animation_frame="year",
+                         animation_group='type_of_conflict',
+                         locationmode='country names',
+                         hover_data=['side_b', 'territory_name',
+                                     'intensity_level', ],
+                         color_continuous_scale=['#82CCF8',
+                                                 '#68D1DE',
+                                                 '#68DEA9',
+                                                 '#75F999'],
+                         scope="world",
+                         height=573,
+                         title='Weltweite Konflikte nach Jahr und Art',
+                         range_color=(1, 4),
+                         labels={
+                             'year': 'Jahr',
+                             'location': 'Land',
+                             'type_of_conflict': 'Konfliktart',
+                             'side_b': 'Gegenseite',
+                             'territory_name': 'Region',
+                             'intensity_level': 'Intensität',
+                         }
+                         )
+
+
+worldmap.update_layout(coloraxis={"colorbar": {"dtick": 1}})
+
 
 # Dataframes
 
 # Testdata einlesen
 testdata = pd.read_csv('testdata.csv')
-testdata['year'] = pd.to_datetime(
-    testdata['year'], format='%Y')
+testdata['year'] = pd.to_datetime(testdata['year'], format='%Y')
 # Array
 testkip = []
 for kip in testdata:
@@ -143,11 +195,17 @@ for conflict in war_table:
 # Figures
 # TODO: Annotationsplatzhalter Figure
 figgy = px.line(testdata, x='year',
-                y='Gesamtbevölkerung')
+                y='Gesamtbevölkerung'
+                )
+
+figgy.update_layout(
+    title_text="Needs to be changed!"
+)
+
 
 # YouTube-TrendsConflicts
 fig_yt_trends_conflicts = px.scatter(
-    youtube_trends_conflicts, x='week', y=youtube_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
+    youtube_trends_conflicts, x='week', y=youtube_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", trendline='lowess', template='custom_dark', trendline_scope="overall", labels={
         'week': 'Woche',
         'value': '<b>Suchanfragen</b> in %',
         'variable': '<b>Konflikt</b><br>'
@@ -156,7 +214,7 @@ fig_yt_trends_conflicts.update_traces(mode='lines+markers')
 
 # Google-TrendsConflicts
 fig_google_trends_conflicts = px.scatter(
-    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", labels={
+    google_trends_conflicts, x='week', y=google_trends_conflicts.columns, title="<b>Google-Trends</b> in Wochen", trendline='lowess', trendline_scope="overall", labels={
         'week': 'Woche',
         'value': '<b>Suchanfragen</b> in %',
         'variable': '<b>Konflikt</b><br>'
@@ -187,27 +245,27 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+                style={'padding': '2rem', 'marginLeft': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
             html.Div(children=[
                 html.H3(df_count, style={'fontWeight': 'bold'}),
                 html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
         ], className="twelve columns")
     ]),
 
@@ -233,7 +291,7 @@ app.layout = html.Div(children=[
             html.A(children='Konfliktarten nach HIIK',
                    href='https://de.statista.com/statistik/daten/studie/2736/umfrage/entwicklung-der-anzahl-von-konflikten-weltweit/', target="_blank"),
         ], className="two columns",
-            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+            style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
 
 
         html.Div(children=[
@@ -245,6 +303,7 @@ app.layout = html.Div(children=[
                                   'value': 'WTI (USD je Barrel)'},
                                  {'label': 'Brent',
                                      'value': 'UK Brent (USD je Barrel)'},
+
                              ],
                              optionHeight=35,  # height/space between dropdown options
                              # dropdown value selected automatically when page loads
@@ -257,42 +316,36 @@ app.layout = html.Div(children=[
                              placeholder='Please select...',
                              clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
-                             style={'width': "50%",
-                                    'display': 'inline-block'},
+                             style={'width': "77.5%", 'marginBottom': '.5rem'},
                              # className='select_box',           #activate separate CSS document in assets folder
                              # persistence=True,                 #remembers dropdown value. Used with persistence_type
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Dropdown(id='conflict_picker_two',
                              options=conflict_options[1:],
-                             optionHeight=35,  # height/space between dropdown options
-                             # dropdown value selected automatically when page loads
                              value='Gesamt',
-                             disabled=False,  # disable dropdown value selection
-                             multi=False,  # allow multiple dropdown values to be selected
-                             searchable=True,  # allow user-searching of dropdown values
-                             search_value='',  # remembers the value searched in dropdown
-                             # gray, default text shown when no option is selected
+                             searchable=True,
+                             multi=False,
                              placeholder='Please select...',
-                             clearable=False,  # allow user to removes the selected value
-                             # use dictionary to define CSS styles of your dropdown
-                             style={'width': "50%"},
-                             # className='select_box',           #activate separate CSS document in assets folder
-                             # persistence=True,                 #remembers dropdown value. Used with persistence_type
-                             # persistence_type='memory'         #remembers dropdown value selected until...
+                             clearable=False,
+                             style={'width': "77.5%",
+                                    'marginBottom': '.5rem'},
                              ),
+                html.Br(id='', className='', children=[]),
+                html.Br(id='', className='', children=[]),
                 dcc.Graph(id='kip_world_graph'),
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white'}),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729'}),
             html.Div(children=[
                 dcc.Dropdown(id='world_kip_picker',
                              options=testkip[1:],
-                             style={'width': "47.8%", 'marginBottom': '.5rem'},
+                             style={'width': "77.5%", 'marginBottom': '.5rem'},
                              clearable=False,
+                             searchable=True,
                              placeholder='KPI auswählen..'
                              ),
                 html.Div(children=[
                     dcc.Input(
-                        id='textarea',
+                        id='textarea', style={'width': "60%"},
                         placeholder='Ihre Eingabe...', type='text'
                     )]),
                 dcc.DatePickerSingle(
@@ -306,7 +359,7 @@ app.layout = html.Div(children=[
                             id='clear',  style={'marginLeft': '.3rem'}),
 
                 dcc.Graph(id='testgraph', figure=figgy)
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white'})
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729'})
         ])
     ], className="twelve columns"),
     html.Div(children=[
@@ -327,7 +380,7 @@ app.layout = html.Div(children=[
                         style={'font-weight': 'bold'}),
              html.A(children='Google-Trends',
                     href='https://www.google.com/trends', target="_blank"), ], className="two columns",
-            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+            style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
 
         ##### HERE insert the code for four boxes & graph #########
         html.Div(children=[
@@ -345,7 +398,7 @@ app.layout = html.Div(children=[
                              placeholder='Please select...',
                              clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
-                             style={'width': "50%"},
+                             style={'width': "77.5%", 'marginBottom': '.5rem'},
                              # className='select_box',           #activate separate CSS document in assets folder
                              # persistence=True,                 #remembers dropdown value. Used with persistence_type
                              # persistence_type='memory'         #remembers dropdown value selected until...
@@ -363,7 +416,7 @@ app.layout = html.Div(children=[
                              placeholder='Please select...',
                              clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
-                             style={'width': "50%"},
+                             style={'width': "77.5%", 'marginBottom': '.5rem'},
                              # className='select_box',           #activate separate CSS document in assets folder
                              # persistence=True,                 #remembers dropdown value. Used with persistence_type
                              # persistence_type='memory'         #remembers dropdown value selected until...
@@ -381,13 +434,16 @@ app.layout = html.Div(children=[
                              placeholder='Please select...',
                              clearable=False,  # allow user to removes the selected value
                              # use dictionary to define CSS styles of your dropdown
-                             style={'width': "50%"},
+                             style={'width': "77.5%", 'marginBottom': '.5rem'},
                              # className='select_box',           #activate separate CSS document in assets folder
                              # persistence=True,                 #remembers dropdown value. Used with persistence_type
                              # persistence_type='memory'         #remembers dropdown value selected until...
                              ),
                 dcc.Graph(id='country_kip_graph'),
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
+            html.Div(id='worldmap', className='five columns', style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }, children=[
+                dcc.Graph(id='worldmap_graph', figure=worldmap)
+            ])
         ])
     ], className="twelve columns"),
     html.Div(children=[
@@ -411,7 +467,7 @@ app.layout = html.Div(children=[
              html.A(children='Google-Trends',
                     href='https://www.google.com/trends', target="_blank"),
              ], className="two columns",
-            style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'background-color': 'white'}),
+            style={'padding': '2rem', 'margin': '1rem', 'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
 
         ##### HERE insert the code for four boxes & graph #########
         html.Div(children=[
@@ -421,22 +477,24 @@ app.layout = html.Div(children=[
                             id='toggle_yt_google_trends', n_clicks=0),
                 dcc.Graph(id='google_trends_conflicts_graph',
                           figure=fig_google_trends_conflicts),
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', }),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
             html.Div(children=[
                 html.Button('Trendlinie on/off',
                             id='trendline_on_off', n_clicks=0),
                 dcc.Graph(id='google_trends_afg_ukr'),
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem', 'boxShadow': '#e3e3e3 4px 4px 2px', 'border-radius': '10px', 'marginTop': '2rem', 'backgroundColor': 'white', })
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', })
 
         ],
         )
     ], className="twelve columns"),
 
 
+
+
 ], style={'padding': '2rem'})
 
 
-@app.callback(
+@ app.callback(
     Output(component_id='testgraph',
            component_property='figure'),
     Input(component_id='submit', component_property='n_clicks'),
@@ -454,6 +512,9 @@ def update_output_div(n_clicks, value, dates, conflict, fig, kip):
     if trigger_id == 'world_kip_picker':
         figure = px.line(testdata, x='year',
                          y=str(kip))
+        figure.update_layout(
+            title_text=str(kip)
+        )
     else:
         if trigger_id == "submit":
             figure.add_vline(x=dt.datetime.strptime(dates, "%Y-%m-%d").timestamp() * 1000,
@@ -461,12 +522,12 @@ def update_output_div(n_clicks, value, dates, conflict, fig, kip):
                              line_width=3, line_dash="dash",
                              line_color="green")
         else:
-            figure = copy.deepcopy(figgy)
+            figure = figgy
 
     return figure
 
 
-@app.callback(
+@ app.callback(
     Output(component_id='google_trends_afg_ukr', component_property='figure'),
     [Input('trendline_on_off', 'n_clicks')],
 )
@@ -491,7 +552,12 @@ def update_output_div(n_clicks):
     return fig
 
 
-@app.callback(
+@ app.callback(Output('world_kip_picker', 'value'), [Input('clear', 'n_clicks')])
+def callback(value):
+    return "Gesamtbevölkerung"
+
+
+@ app.callback(
     Output(component_id='google_trends_conflicts_graph',
            component_property='figure'),
     [Input('toggle_yt_google_trends', 'n_clicks')],
@@ -527,14 +593,15 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
         go.Bar(x=war_table['year'],
                y=war_table[conflict_chosen],
                name=str(conflict_chosen),
+               marker_color='#82CCF8',
                opacity=0.5),
-        secondary_y=True,
+        secondary_y=False,
 
     )
     fig.add_trace(
         go.Scatter(x=dff['year'], y=dff[kip_chosen],
                    name=str(kip_chosen), mode='lines+markers'),
-        secondary_y=False,
+        secondary_y=True,
     )
 
 
@@ -559,7 +626,7 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
     return fig
 
 
-@app.callback(
+@ app.callback(
     Output(component_id='kip_world_graph', component_property='figure'),
     Input(component_id='column_picker', component_property='value'),
     Input(component_id='conflict_picker_two', component_property='value')
@@ -576,6 +643,7 @@ def build_graph(column_chosen, conflict_chosen_two):
         go.Bar(x=war_table['year'],
                y=war_table[conflict_chosen_two],
                name=str(conflict_chosen_two),
+               marker_color='#82CCF8',
                opacity=0.5),
         secondary_y=True,
 
