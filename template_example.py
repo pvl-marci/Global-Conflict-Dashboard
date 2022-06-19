@@ -33,23 +33,62 @@ plt_io.templates['custom_dark']['layout']['xaxis']['gridcolor'] = '#4f687d'
 df_count = 0
 
 # WorldMap Test
+# source for categories https://mahshadn.medium.com/animated-choropleth-map-with-discrete-colors-using-python-and-plotly-styling-5e208e5b6bf8
 wars = pd.read_csv('war_and_peace.csv')
-wars = wars.sort_values('type_of_conflict', ascending=True)
+
+
+wars['category'] = ''
+
+# Kateogiren nach ourworldindata, der Doku zu entnehmen
+
+
+def set_cat(row):
+    if row['type_of_conflict'] == 1:
+        return 'außersystemisch'
+    if row['type_of_conflict'] == 2:
+        return 'zwischenstaatlich'
+    if row['type_of_conflict'] == 3:
+        return 'innerstaatlich'
+    if row['type_of_conflict'] == 4:
+        return 'international innerstaatlich'
+
+
+wars = wars.assign(category=wars.apply(set_cat, axis=1))
 wars = wars.sort_values('year', ascending=True)
+
+catg = wars['category'].unique()
+dts = wars['year'].unique()
+
+for tf in dts:
+    for i in catg:
+        wars = pd.concat([wars, pd.DataFrame.from_records([{
+            'year': tf,
+            'type_of_conflict': 'N',
+            'category': i
+        }])])
 
 
 worldmap = px.choropleth(wars,
                          locations='location',
-                         color="type_of_conflict",
+                         color="category",
                          animation_frame="year",
                          animation_group='type_of_conflict',
                          locationmode='country names',
                          hover_data=['side_b', 'territory_name',
                                      'intensity_level', ],
-                         color_continuous_scale=['#82CCF8',
-                                                 '#68D1DE',
-                                                 '#68DEA9',
-                                                 '#75F999'],
+                         color_discrete_map={'1': '#82CCF8',
+                                             '2': '#68D1DE',
+                                             '3': '#68DEA9',
+                                             '4': '#75F999'},
+                         category_orders={
+                             'category': [
+                                 'außersystemisch',
+                                 'zwischenstaatlich',
+                                 'innerstaatlich',
+                                 'international innerstaatlich',
+
+                             ]
+                         },
                          scope="world",
                          height=573,
                          title='Weltweite Konflikte nach Jahr und Art',
@@ -57,15 +96,19 @@ worldmap = px.choropleth(wars,
                          labels={
                              'year': 'Jahr',
                              'location': 'Land',
-                             'type_of_conflict': 'Konfliktart',
+                             'category': '<b>Konfliktart</b>',
                              'side_b': 'Gegenseite',
                              'territory_name': 'Region',
                              'intensity_level': 'Intensität',
                          }
                          )
 
-
-worldmap.update_layout(coloraxis={"colorbar": {"dtick": 1}})
+worldmap.update_layout(
+    showlegend=True,
+    margin={"r": 0, "t": 40, "l": 0, "b": 0},
+    legend=dict(orientation='v')
+)
+# worldmap.update_layout(coloraxis={"colorbar": {"dtick": 1}})
 
 
 # Dataframes
@@ -295,46 +338,9 @@ app.layout = html.Div(children=[
 
 
         html.Div(children=[
-            # Line chart for accidents per day
-            html.Div(children=[
-                dcc.Dropdown(id='column_picker',
-                             options=[
-                                 {'label': 'West Texas Intermediate',
-                                  'value': 'WTI (USD je Barrel)'},
-                                 {'label': 'Brent',
-                                     'value': 'UK Brent (USD je Barrel)'},
-
-                             ],
-                             optionHeight=35,  # height/space between dropdown options
-                             # dropdown value selected automatically when page loads
-                             value='WTI (USD je Barrel)',
-                             disabled=False,  # disable dropdown value selection
-                             multi=False,  # allow multiple dropdown values to be selected
-                             searchable=True,  # allow user-searching of dropdown values
-                             search_value='',  # remembers the value searched in dropdown
-                             # gray, default text shown when no option is selected
-                             placeholder='Please select...',
-                             clearable=False,  # allow user to removes the selected value
-                             # use dictionary to define CSS styles of your dropdown
-                             style={'width': "77.5%", 'marginBottom': '.5rem'},
-                             # className='select_box',           #activate separate CSS document in assets folder
-                             # persistence=True,                 #remembers dropdown value. Used with persistence_type
-                             # persistence_type='memory'         #remembers dropdown value selected until...
-                             ),
-                dcc.Dropdown(id='conflict_picker_two',
-                             options=conflict_options[1:],
-                             value='Gesamt',
-                             searchable=True,
-                             multi=False,
-                             placeholder='Please select...',
-                             clearable=False,
-                             style={'width': "77.5%",
-                                    'marginBottom': '.5rem'},
-                             ),
-                html.Br(id='', className='', children=[]),
-                html.Br(id='', className='', children=[]),
-                dcc.Graph(id='kip_world_graph'),
-            ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729'}),
+            html.Div(id='worldmap', className='five columns', style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }, children=[
+                dcc.Graph(id='worldmap_graph', figure=worldmap)
+            ]),
             html.Div(children=[
                 dcc.Dropdown(id='world_kip_picker',
                              options=testkip[1:],
@@ -441,9 +447,45 @@ app.layout = html.Div(children=[
                              ),
                 dcc.Graph(id='country_kip_graph'),
             ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
-            html.Div(id='worldmap', className='five columns', style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }, children=[
-                dcc.Graph(id='worldmap_graph', figure=worldmap)
-            ])
+            html.Div(children=[
+                dcc.Dropdown(id='column_picker',
+                             options=[
+                                 {'label': 'West Texas Intermediate',
+                                  'value': 'WTI (USD je Barrel)'},
+                                 {'label': 'Brent',
+                                     'value': 'UK Brent (USD je Barrel)'},
+
+                             ],
+                             optionHeight=35,  # height/space between dropdown options
+                             # dropdown value selected automatically when page loads
+                             value='WTI (USD je Barrel)',
+                             disabled=False,  # disable dropdown value selection
+                             multi=False,  # allow multiple dropdown values to be selected
+                             searchable=True,  # allow user-searching of dropdown values
+                             search_value='',  # remembers the value searched in dropdown
+                             # gray, default text shown when no option is selected
+                             placeholder='Please select...',
+                             clearable=False,  # allow user to removes the selected value
+                             # use dictionary to define CSS styles of your dropdown
+                             style={'width': "77.5%", 'marginBottom': '.5rem'},
+                             # className='select_box',           #activate separate CSS document in assets folder
+                             # persistence=True,                 #remembers dropdown value. Used with persistence_type
+                             # persistence_type='memory'         #remembers dropdown value selected until...
+                             ),
+                dcc.Dropdown(id='conflict_picker_two',
+                             options=conflict_options[1:],
+                             value='Gesamt',
+                             searchable=True,
+                             multi=False,
+                             placeholder='Please select...',
+                             clearable=False,
+                             style={'width': "77.5%",
+                                    'marginBottom': '.5rem'},
+                             ),
+                html.Br(id='', className='', children=[]),
+                html.Br(id='', className='', children=[]),
+                dcc.Graph(id='kip_world_graph'),
+            ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729'}),
         ])
     ], className="twelve columns"),
     html.Div(children=[
@@ -605,7 +647,9 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
     )
 
 
-# add dropdown menus to the figure
+#  secon xaxis
+    # fig.update_layout(xaxis2={'anchor': 'y', 'overlaying': 'x', 'side': 'top'}
+    #                   )
 
 
 # Add figure title
@@ -616,6 +660,7 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 # Set x-axis title
     fig.update_xaxes(title_text="Jahr", range=[2001, 2022])
+    # fig.data[1].update(xaxis='x2')
 
 # Set y-axes titles
     fig.update_yaxes(
@@ -678,4 +723,4 @@ def build_graph(column_chosen, conflict_chosen_two):
 
 # app starter
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host='0.0.0.0', debug=True)
