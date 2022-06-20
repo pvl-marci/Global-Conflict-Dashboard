@@ -128,9 +128,14 @@ bachelor_table = pd.read_csv('datasets//bachelor_table.csv')
 bachelor_table = bachelor_table.astype({'year': int})
 
 
-# Einlesen der Konflikttabelle
+# Einlesen der Konflikttabelle HIIK
 war_table = pd.read_csv('datasets\war_table.csv')
 war_table = war_table.astype({'year': int})
+
+
+# Einlesen der Konflikttabelle ourworldindata
+war_table_owid = pd.read_csv('war_table_two.csv', sep=';')
+war_table_owid = war_table_owid.astype({'year': int})
 
 
 # Einlesen der Google Trends für Konflikte
@@ -224,10 +229,16 @@ for country in bachelor_table['country_name'].unique():
     country_options.append({'label': str(country), 'value': country})
 
 
-# Conflict Array für Dropdown
+# HIIK Conflict Array für Dropdown
 conflict_options = []
 for conflict in war_table:
     conflict_options.append({'label': str(conflict), 'value': conflict})
+
+# ourworldindata Conflict Array für Dropdown
+conflict_options_owid = []
+for conflict in war_table_owid:
+    conflict_options_owid.append({'label': str(conflict), 'value': conflict})
+
 
 # Figures
 
@@ -435,17 +446,28 @@ app.layout = html.Div(children=[
 
         # DIV World KIPS, HIIK Konflikte
         html.Div(children=[
-            dcc.Dropdown(id='column_picker',
-                         options=[
-                             {'label': 'West Texas Intermediate',
-                              'value': 'WTI (USD je Barrel)'},
-                             {'label': 'Brent',
-                              'value': 'UK Brent (USD je Barrel)'},
-
-                         ],
+            dcc.Dropdown(id='country_picker_two',
+                         options=country_options,
+                         optionHeight=35,  # height/space between dropdown options
+                         value='Germany',  # dropdown value selected automatically when page loads
+                         disabled=False,  # disable dropdown value selection
+                         multi=False,  # allow multiple dropdown values to be selected
+                         searchable=True,  # allow user-searching of dropdown values
+                         search_value='',  # remembers the value searched in dropdown
+                         # gray, default text shown when no option is selected
+                         placeholder='Please select...',
+                         clearable=False,  # allow user to removes the selected value
+                         # use dictionary to define CSS styles of your dropdown
+                         style={'width': "77.5%", 'marginBottom': '.5rem'},
+                         # className='select_box',           #activate separate CSS document in assets folder
+                         # persistence=True,                 #remembers dropdown value. Used with persistence_type
+                         # persistence_type='memory'         #remembers dropdown value selected until...
+                         ),
+            dcc.Dropdown(id='kip_picker_two',
+                         options=kip_options[3:],
                          optionHeight=35,  # height/space between dropdown options
                          # dropdown value selected automatically when page loads
-                         value='WTI (USD je Barrel)',
+                         value='BIP Wachstum zum Vorjahr in %',
                          disabled=False,  # disable dropdown value selection
                          multi=False,  # allow multiple dropdown values to be selected
                          searchable=True,  # allow user-searching of dropdown values
@@ -460,19 +482,25 @@ app.layout = html.Div(children=[
                          # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
             dcc.Dropdown(id='conflict_picker_two',
-                         options=conflict_options[1:],
+                         options=conflict_options_owid[1:],
+                         optionHeight=35,  # height/space between dropdown options
+                         # dropdown value selected automatically when page loads
                          value='Gesamt',
-                         searchable=True,
-                         multi=False,
+                         disabled=False,  # disable dropdown value selection
+                         multi=False,  # allow multiple dropdown values to be selected
+                         searchable=True,  # allow user-searching of dropdown values
+                         search_value='',  # remembers the value searched in dropdown
+                         # gray, default text shown when no option is selected
                          placeholder='Please select...',
-                         clearable=False,
-                         style={'width': "77.5%",
-                                'marginBottom': '.5rem'},
+                         clearable=False,  # allow user to removes the selected value
+                         # use dictionary to define CSS styles of your dropdown
+                         style={'width': "77.5%", 'marginBottom': '.5rem'},
+                         # className='select_box',           #activate separate CSS document in assets folder
+                         # persistence=True,                 #remembers dropdown value. Used with persistence_type
+                         # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
-            html.Br(id='', className='', children=[]),
-            html.Br(id='', className='', children=[]),
-            dcc.Graph(id='kip_world_graph'),
-        ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729'}),
+            dcc.Graph(id='country_kip_graph_owid'),
+        ], className="five columns", style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
     ]),
 
     # Div dritte Reihe
@@ -600,60 +628,63 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 # Set y-axes titles
     fig.update_yaxes(
-        title_text='<b>primary</b> '+str(kip_chosen), secondary_y=False)
+        title_text=str(kip_chosen), secondary_y=False)
     fig.update_yaxes(
-        title_text='<b>secondary</b> '+str(conflict_chosen), secondary_y=True)
+        title_text=str(conflict_chosen), secondary_y=True)
 
     return fig
 
 
 # Callback Oilprices Chart zweites Div zweite Reihe
 @ app.callback(
-    Output(component_id='kip_world_graph', component_property='figure'),
-    Input(component_id='column_picker', component_property='value'),
-    Input(component_id='conflict_picker_two', component_property='value')
+    Output(component_id='country_kip_graph_owid', component_property='figure'),
+    Input(component_id='country_picker_two', component_property='value'),
+    Input(component_id='kip_picker_two', component_property='value'),
+    Input(component_id='conflict_picker_two', component_property='value'),
 
 )
-def build_graph(column_chosen, conflict_chosen_two):
-    df = oil_prices
+def build_graph(country_chosen, kip_chosen, conflict_chosen):
+    copy = bachelor_table
+    dff = copy[copy['country_name'] == country_chosen]
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-
 # Add traces
-
     fig.add_trace(
-        go.Bar(x=war_table['year'],
-               y=war_table[conflict_chosen_two],
-               name=str(conflict_chosen_two),
+        go.Bar(x=war_table_owid['year'],
+               y=war_table_owid[conflict_chosen],
+               name=str(conflict_chosen),
                marker_color='#82CCF8',
                opacity=0.5),
-        secondary_y=True,
+        secondary_y=False,
 
     )
     fig.add_trace(
-        go.Scatter(x=df['year'], y=df[column_chosen],
-                   name=str(column_chosen), mode='lines+markers'),
-        secondary_y=False,
+        go.Scatter(x=dff['year'], y=dff[kip_chosen],
+                   name=str(kip_chosen), mode='lines+markers'),
+        secondary_y=True,
     )
 
 
-# add dropdown menus to the figure
+#  secon xaxis
+    # fig.update_layout(xaxis2={'anchor': 'y', 'overlaying': 'x', 'side': 'top'}
+    #                   )
 
 
 # Add figure title
     fig.update_layout(
-        title_text="Verhältnis Konfliktart vs " +
-        "<b>"+str(column_chosen)+"</b>"
+        title_text="Verhältnis Konfliktart vs <b>" +
+        str(kip_chosen)+"</b> in <b>"+str(country_chosen)+"</b>"
     )
 
 # Set x-axis title
     fig.update_xaxes(title_text="Jahr", range=[2001, 2022])
+    # fig.data[1].update(xaxis='x2')
 
 # Set y-axes titles
     fig.update_yaxes(
-        title_text='<b>primary</b> '+str(column_chosen), secondary_y=False)
+        title_text=str(kip_chosen), secondary_y=False)
     fig.update_yaxes(
-        title_text='<b>secondary</b> '+str(conflict_chosen_two), secondary_y=True)
+        title_text=str(conflict_chosen), secondary_y=True)
 
     return fig
 
