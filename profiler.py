@@ -3,12 +3,10 @@ import numpy as np
 import pandas as pd
 from pandas_profiling import ProfileReport
 
-df = pd.concat(
-    map(pd.read_csv, ['ukraine_google_trends.csv', 'afghanistan_google_trends.csv']), ignore_index=True)
+df = pd.read_csv('datasets//testtable.csv', sep=';')
 
-df['Woche'] = pd.to_datetime(df['Woche'])
+df['year'] = pd.to_datetime(df['year'])
 
 
-df['Woche'] = pd.to_datetime(df['Woche'])
 profile = ProfileReport(df, title='Report')
-profile.to_file("your_report.html")
+profile.to_file("test_report.html")

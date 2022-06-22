@@ -129,7 +129,7 @@ bachelor_table = bachelor_table.astype({'year': int})
 
 
 # Einlesen der Konflikttabelle HIIK
-war_table = pd.read_csv('datasets\war_table.csv')
+war_table = pd.read_csv('datasets//war_table.csv')
 war_table = war_table.astype({'year': int})
 
 
@@ -189,7 +189,7 @@ bachelor_table = bachelor_table.rename(columns={
     'brithrate': 'Geburtenrate per 1000 Einwohner',
     'gdp_growth': 'BIP Wachstum zum Vorjahr in %',
     'gdp_usd': 'BIP in USD',
-    'military_spendings_growth': 'Militärausgaben zum Vorjahr in %',
+    'military_spendings_growth': 'Militärausgaben in % zum BIP',
     'military_spendings_usd': 'Militärausgaben in USD',
     'life_exp': 'Lebenserwartung in Jahren',
     'energy_use': 'Energienutzung in Kg',
