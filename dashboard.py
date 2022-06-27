@@ -664,10 +664,9 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
         secondary_y=True,
     )
 
-
-#  secon xaxis
-    # fig.update_layout(xaxis2={'anchor': 'y', 'overlaying': 'x', 'side': 'top'}
-    #                   )
+ # secon xaxis
+    fig.update_layout(xaxis2={'anchor': 'y', 'overlaying': 'x', 'side': 'top'}
+                      )
 
 
 # Add figure title
