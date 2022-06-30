@@ -27,7 +27,7 @@ plt_io.templates.default = "custom_dark"
 
 # animierte WorldMap erstellen
 # source for categories https://mahshadn.medium.com/animated-choropleth-map-with-discrete-colors-using-python-and-plotly-styling-5e208e5b6bf8
-wars = pd.read_csv('war_and_peace.csv')
+wars = pd.read_csv('datasets//war_and_peace.csv')
 
 # Kategorien erstellen für unique Legendeneinträge
 wars['category'] = ''
@@ -103,7 +103,7 @@ worldmap.update_layout(
 
 
 # Testdata einlesen (für die Tabelle mit Annotations)
-testdata = pd.read_csv('testdata.csv')
+testdata = pd.read_csv('datasets//testdata.csv')
 testdata['year'] = pd.to_datetime(testdata['year'], format='%Y')
 # Array
 testkip = []
@@ -124,8 +124,9 @@ oil_prices = pd.read_csv('datasets//oil_brent_texas.csv', header=[0])
 
 
 # KIP Ländertabelle
-bachelor_table = pd.read_csv('datasets//bachelor_table.csv')
-bachelor_table = bachelor_table.astype({'year': int})
+# kpi_table = pd.read_csv('datasets//kpi_table.csv')
+kpi_table = pd.read_csv('datasets//g8_kpi_table.csv')
+kpi_table = kpi_table.astype({'year': int})
 
 
 # Einlesen der Konflikttabelle HIIK
@@ -134,7 +135,7 @@ war_table = war_table.astype({'year': int})
 
 
 # Einlesen der Konflikttabelle ourworldindata
-war_table_owid = pd.read_csv('war_table_two.csv', sep=';')
+war_table_owid = pd.read_csv('datasets//war_table_two.csv', sep=';')
 war_table_owid = war_table_owid.astype({'year': int})
 
 
@@ -185,14 +186,16 @@ youtube_trends_conflicts = youtube_trends_conflicts.rename(columns={
 
 
 # Rename der KIP Tabellenköpfe
-bachelor_table = bachelor_table.rename(columns={
-    'brithrate': 'Geburtenrate per 1000 Einwohner',
+kpi_table = kpi_table.rename(columns={
     'gdp_growth': 'BIP Wachstum zum Vorjahr in %',
     'gdp_usd': 'BIP in USD',
     'military_spendings_growth': 'Militärausgaben in % zum BIP',
     'military_spendings_usd': 'Militärausgaben in USD',
-    'life_exp': 'Lebenserwartung in Jahren',
+    'gni_usd': 'BNI in USD',
+    'gni_growth': 'BNI in Wachstum zum Vorjahr in %',
     'energy_use': 'Energienutzung in Kg',
+    'national_income_usd': 'Nettnationaleinkommen in USD',
+    'national_income_growth': 'Nettonationaleinkommen Wachstum zum Vorjahr',
 })
 
 
@@ -219,13 +222,13 @@ oil_prices = oil_prices.rename(columns={
 
 # KIP Array für Dropdown
 kip_options = []
-for kip in bachelor_table:
+for kip in kpi_table:
     kip_options.append({'label': str(kip), 'value': kip})
 
 
 # Country Array für Dropdown
 country_options = []
-for country in bachelor_table['country_name'].unique():
+for country in kpi_table['country_name'].unique():
     country_options.append({'label': str(country), 'value': country})
 
 
@@ -406,7 +409,7 @@ app.layout = html.Div(children=[
                          # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
             dcc.Dropdown(id='kip_picker',
-                         options=kip_options[3:],
+                         options=kip_options[2:],
                          optionHeight=35,  # height/space between dropdown options
                          # dropdown value selected automatically when page loads
                          value='BIP Wachstum zum Vorjahr in %',
@@ -464,7 +467,7 @@ app.layout = html.Div(children=[
                          # persistence_type='memory'         #remembers dropdown value selected until...
                          ),
             dcc.Dropdown(id='kip_picker_two',
-                         options=kip_options[3:],
+                         options=kip_options[2:],
                          optionHeight=35,  # height/space between dropdown options
                          # dropdown value selected automatically when page loads
                          value='BIP Wachstum zum Vorjahr in %',
@@ -590,7 +593,7 @@ def update_output_div(n_clicks, value, dates, conflict, fig, kip):
 
 )
 def build_graph(country_chosen, kip_chosen, conflict_chosen):
-    copy = bachelor_table
+    copy = kpi_table
     dff = copy[copy['country_name'] == country_chosen]
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -644,7 +647,7 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 )
 def build_graph(country_chosen, kip_chosen, conflict_chosen):
-    copy = bachelor_table
+    copy = kpi_table
     dff = copy[copy['country_name'] == country_chosen]
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
