@@ -334,6 +334,7 @@ app.layout = html.Div(children=[
         ], className="two columns",
             style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
 
+
         # Div Worldmap
         html.Div(className='five columns', style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729'}, children=[
             dcc.Graph(id='worldmap_graph', figure=worldmap)]),
@@ -599,11 +600,11 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 # Add traces
     fig.add_trace(
-        go.Bar(x=war_table['year'],
-               y=war_table[conflict_chosen],
-               name=str(conflict_chosen),
-               marker_color='#82CCF8',
-               opacity=0.5),
+        go.Scatter(x=war_table['year'],
+                   y=war_table[conflict_chosen],
+                   name=str(conflict_chosen),
+                   marker_color='#82CCF8',
+                   mode='lines+markers'),
         secondary_y=False,
 
     )
@@ -653,11 +654,13 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
 
 # Add traces
     fig.add_trace(
-        go.Bar(x=war_table_owid['year'],
-               y=war_table_owid[conflict_chosen],
-               name=str(conflict_chosen),
-               marker_color='#82CCF8',
-               opacity=0.5),
+        go.Scatter(x=war_table_owid['year'],
+                   y=war_table_owid[conflict_chosen],
+                   name=str(conflict_chosen),
+                   marker_color='#82CCF8',
+                   mode='lines+markers'
+                   #    opacity=0.5
+                   ),
         secondary_y=False,
 
     )
