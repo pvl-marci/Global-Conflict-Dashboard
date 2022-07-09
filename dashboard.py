@@ -279,35 +279,35 @@ app.layout = html.Div(children=[
     ], style={'textAlign': 'center'}),
 
     # Box Reihe
-    html.Div(children=[
-        # Boxes Div für spätere KIPs
-        html.Div(children=[
-            html.Div(children=[
-                html.H3('Test', style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
-            html.Div(children=[
-                html.H3('Test', style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
-            html.Div(children=[
-                html.H3('Test', style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
-            html.Div(children=[
-                html.H3('Test', style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
-            html.Div(children=[
-                html.H3('Test', style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
-            html.Div(children=[
-                html.H3('Test', style={'fontWeight': 'bold'}),
-                html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
-                style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
-        ], className="twelve columns")
-    ]),
+    # html.Div(children=[
+    #     # Boxes Div für spätere KIPs
+    #     html.Div(children=[
+    #         html.Div(children=[
+    #             html.H3('Test', style={'fontWeight': 'bold'}),
+    #             html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+    #             style={'padding': '2rem', 'marginLeft': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
+    #         html.Div(children=[
+    #             html.H3('Test', style={'fontWeight': 'bold'}),
+    #             html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+    #             style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
+    #         html.Div(children=[
+    #             html.H3('Test', style={'fontWeight': 'bold'}),
+    #             html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+    #             style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
+    #         html.Div(children=[
+    #             html.H3('Test', style={'fontWeight': 'bold'}),
+    #             html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+    #             style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
+    #         html.Div(children=[
+    #             html.H3('Test', style={'fontWeight': 'bold'}),
+    #             html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+    #             style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
+    #         html.Div(children=[
+    #             html.H3('Test', style={'fontWeight': 'bold'}),
+    #             html.Label('Datensätze', style={'paddingTop': '.3rem'}), ], className="two columns",
+    #             style={'padding': '2rem', 'marginLeft': '2rem',  'border-radius': '0px', 'marginTop': '2rem', 'backgroundColor': '#272729', }),
+    #     ], className="twelve columns")
+    # ]),
 
 
     # Div erste Reihe
@@ -315,12 +315,11 @@ app.layout = html.Div(children=[
 
         # Div Erklärung erste Reihe
         html.Div(children=[
-            html.H4(children='Konfliktart vs Weltwirtschaft'),
+            html.H4(children='Konflikte und die Weltwirtschaft'),
             html.H6(children='Erklärung',
                     style={'marginTop': '-15px', 'marginBottom': '30px'}),
-            html.P(children='Diese zwei Graphen zeigen das Verhältnis von globalen Konflikten zu weltwirtschaftlichen Kennzahlen.'),
-            html.P(children='Der linke Graph unterteilt die Konfliktarten nach der Methodik vom Heidelberger Institut für Internationale Konfliktforschung (HIIK).'),
-            html.P(children='Im oberen Dropdown wird die KPI ausgewählt und im unteren Dropdown wird die Konfliktart ausgewählt.'),
+            html.P(children='Der linke Graph zeigt eine animierte Weltkarte mit allen Konflikten weltweit von 1946 bis 2020.'),
+            html.P(children='Der rechte Graph zeigt weltwirtschaftliche Kennzahlen, welche über das Dropdownmenü ausgewählt werden können. Über das Eingabe- und Datumsfeld, können Anemrkungen auf dem Graphen hinzugefügt werden.'),
             html.Br(),
             html.Br(),
             html.Br(),
@@ -329,8 +328,8 @@ app.layout = html.Div(children=[
             html.Br(),
             html.Label(children='Datenquellen: ',
                        style={'font-weight': 'bold'}),
-            html.A(children='Konfliktarten nach HIIK',
-                   href='https://de.statista.com/statistik/daten/studie/2736/umfrage/entwicklung-der-anzahl-von-konflikten-weltweit/', target="_blank"),
+            html.A(children='The World Bank Data',
+                   href='https://databank.worldbank.org/source/world-development-indicators', target="_blank"),
         ], className="two columns",
             style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
 
@@ -377,17 +376,22 @@ app.layout = html.Div(children=[
                  children='Konfliktart vs Wirtschaft in den G8+5 Staaten'),
              html.H6(children='Erklärung',
                      style={'marginTop': '-15px', 'marginBottom': '30px'}),
-             html.P(children='Dieser Graph zeigt die Anzahl der Google bzw. YouTube-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
+             html.P(children='Diese Graphen zeigen das Verhältnis der KPIs der G8+5 Staaten in Verhältnis zu den Konflikten nach HIIK und Our World in Data.'),
              html.P(
-                 children='Auf der rechten Seite können die jeweiligen Keyword ausgeblendet und eingeblendet werden.'),
-             html.P(children='(DEU) steht für Suchanfragen aus Deutschland.'),
-             html.P(children='(WLD) steht für weltweite Suchanfragen.'),
+                 children='Links werden die KPIs mit den Konflikten nach dem HIIK gezeigt. Rechts werden die KPIs mit den Konflikten nach Our World in Data visualisiert.'),
              html.Br(),
              html.Br(),
              html.Label(children='Datenquellen: ',
                         style={'font-weight': 'bold'}),
-             html.A(children='Google-Trends',
-                    href='https://www.google.com/trends', target="_blank"), ], className="two columns",
+             html.A(children='Konfliktarten nach HIIK',
+                    href='https://de.statista.com/statistik/daten/studie/2736/umfrage/entwicklung-der-anzahl-von-konflikten-weltweit/', target="_blank"),
+             html.Br(),
+             html.A(children='Konfliktarten nach PRIO/UCDP/OWID',
+                    href='https://de.statista.com/statistik/daten/studie/168188/umfrage/anzahl-internationale-konflikte/', target="_blank"),
+             html.Br(),
+             html.A(children='The World Bank Data',
+                    href='https://databank.worldbank.org/source/world-development-indicators', target="_blank"),
+             ], className="two columns",
             style={'padding': '2rem', 'margin': '1rem',  'border-radius': '0px', 'marginTop': '2rem', 'background-color': '#272729'}),
 
         # Div Linechart Länder, KIPS, HIIK Konflikte
@@ -513,12 +517,12 @@ app.layout = html.Div(children=[
         # Div dritte Reihe Erklärung
         html.Div(children=[
              html.H4(
-                 children='Google Suchen nach Konfliktregion'),
+                 children='Google-Trends: Konflikte'),
              html.H6(children='Erklärung',
                      style={'marginTop': '-15px', 'marginBottom': '30px'}),
-             html.P(children='Dieser Graph zeigt die Anzahl der Google-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
+             html.P(children='Diese Graphen zeigen die Anzahl der Google-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
              html.P(
-                 children='Auf der rechten Seite können die jeweiligen Keyword ausgeblendet und eingeblendet werden.'),
+                 children='Der Graph auf der rechten Seite ist noch WIP'),
              html.P(children='(DEU) steht für Suchanfragen aus Deutschland'),
              html.P(children='(WLD) steht für weltweite Suchanfragen'),
              html.P(
