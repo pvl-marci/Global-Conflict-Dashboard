@@ -115,7 +115,7 @@ figgy = px.line(testdata, x='year',
                 y='Gesamtbevölkerung'
                 )
 figgy.update_layout(
-    title_text="Needs to be changed!"
+    title_text="Gesamtbevölkerung"
 )
 
 
@@ -522,7 +522,7 @@ app.layout = html.Div(children=[
                      style={'marginTop': '-15px', 'marginBottom': '30px'}),
              html.P(children='Diese Graphen zeigen die Anzahl der Google-Suchanfragen in einer jeweiligen Woche in Prozent zum höchsten Wert. 100 bedeutet, dass in dieser Woche die meisten Suchanfragen zu dieser Konfliktregion abgeschickt wurden.'),
              html.P(
-                 children='Der Graph auf der rechten Seite ist noch WIP'),
+                 children='Der Graph auf der rechten Seite ist noch'),
              html.P(children='(DEU) steht für Suchanfragen aus Deutschland'),
              html.P(children='(WLD) steht für weltweite Suchanfragen'),
              html.P(
@@ -617,11 +617,6 @@ def build_graph(country_chosen, kip_chosen, conflict_chosen):
                    name=str(kip_chosen), mode='lines+markers'),
         secondary_y=True,
     )
-
-
-#  secon xaxis
-    # fig.update_layout(xaxis2={'anchor': 'y', 'overlaying': 'x', 'side': 'top'}
-    #                   )
 
 
 # Add figure title
