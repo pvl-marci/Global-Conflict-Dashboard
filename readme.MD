@@ -1,6 +1,6 @@
 # Global Conflicts Data Dashboard
 
-![Dashboard Screenshot](screenshots\dashboard.png)
+![Dashboard Screenshot](screenshots/dashboard.png)
 
 This repository contains an interactive dashboard for visualizing global conflict data, developed as part of a Bachelor Thesis in 2022. The dashboard is built with Plotly Dash in Python and provides insights into worldwide conflicts, their types, and their correlation with economic indicators and Google Trends.
 
